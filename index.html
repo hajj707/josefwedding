@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0f12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>Joseph & Anna‑Maria — Wedding Invitation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Parisienne&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0d0f12; --text:#f5f5f7; --muted:#9aa0ac; --gold:#e9c46a; --rose:#e76f51; --brand:#8ecae6;
+      --card:rgba(255,255,255,.06); --stroke:rgba(255,255,255,.12); --radius:22px; --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+    html,body{height:100%}
+    body{margin:0; color:var(--text); font-family:Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial; line-height:1.6; overflow:hidden; overscroll-behavior:none;}
+
+    /* Background slideshow */
+    #bg{position:fixed; inset:0; z-index:-2;}
+    #bg img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 900ms ease; filter:brightness(.7);}
+    #bg img.active{opacity:1}
+    #bg::after{content:""; position:absolute; inset:0; background:radial-gradient(1000px 700px at 20% -10%, rgba(30,30,39,.35), transparent 60%),
+                                       radial-gradient(900px 600px at 110% 30%, rgba(27,34,43,.35), transparent 60%);}    
+
+    /* Top bar */
+    .topbar{position:fixed; inset-inline:0; top:0; display:flex; gap:12px; align-items:center; justify-content:space-between; padding:12px calc(env(safe-area-inset-right,0) + 14px) 12px calc(env(safe-area-inset-left,0) + 14px);}
+    .pill{background:rgba(0,0,0,.35); border:1px solid var(--stroke); border-radius:999px; color:var(--muted); padding:8px 12px; font-size:12px}
+    .controls{display:flex; gap:8px; align-items:center}
+    .iconbtn{border:1px solid var(--stroke); background:rgba(0,0,0,.45); color:var(--text); border-radius:12px; padding:10px 12px; cursor:pointer}
+
+    /* Viewport & Carousel */
+    .viewport{position:fixed; inset:0; display:grid; place-items:center; padding:20px; height:100svh}
+    .frame{width:min(1000px,100%); height:100%; display:grid; grid-template-rows:1fr auto;}
+    .carousel{width:100%; height:100%; display:flex; transform:translateX(0); transition:transform 340ms ease; touch-action:none; user-select:none}
+    .slide{min-width:100%; height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:16px; padding-bottom:calc(env(safe-area-inset-bottom,0) + 8px)}
+
+    /* Card styling */
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)); border:1px solid var(--stroke); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px}
+    h1.names{font-family:Cinzel, serif; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin:6px 0 4px; font-size:clamp(26px,5vw,42px); text-align:center}
+    .monoline{font-family:Parisienne, serif; font-size:clamp(34px,5vw,60px); color:var(--gold); text-align:center}
+    h2{font-family:Cinzel, serif; font-size:22px; letter-spacing:1px; text-transform:uppercase; margin:0 0 10px}
+    .subtitle{color:var(--muted); font-size:14px; text-align:center}
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+    a{color:var(--brand); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Countdown */
+    .countdown{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+    .timebox{display:grid; gap:6px; text-align:center; padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.35); border:1px solid var(--stroke); min-width:70px}
+    .timebox .num{font-size:26px; font-weight:700}
+    .timebox .lbl{font-size:11px; color:var(--muted)}
+
+    /* Timeline */
+    .timeline{display:grid; gap:12px}
+    .item{display:grid; gap:4px; padding:12px; border-radius:14px; background:rgba(0,0,0,.35); border:1px solid var(--stroke)}
+    .kicker{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px}
+
+    /* Dots */
+    .dots{display:flex; justify-content:center; gap:8px; padding:10px 0}
+    .dot{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.35)}
+    .dot.active{background:var(--rose)}
+
+    /* Form */
+    form{display:grid; gap:14px}
+    label{font-size:13px; color:var(--muted)}
+    input[type="text"], input[type="tel"], input[type="email"], select, textarea{
+      background:rgba(0,0,0,.45); border:1px solid var(--stroke); border-radius:12px; color:var(--text); padding:12px 14px; outline:none; transition:.15s border-color ease;
+    }
+    input:focus, select:focus, textarea:focus{ border-color:var(--brand) }
+    .btn{background:linear-gradient(180deg, #2a2a33, #1a1a22); border:1px solid var(--stroke); color:var(--text); border-radius:14px; padding:14px 16px; font-weight:600; cursor:pointer}
+    .success, .error{border-left:4px solid; padding:12px 14px; border-radius:10px}
+    .success{background:#0e1a12; border-color:#2a9d8f}
+    .error{background:#1a0e0e; border-color:#e76f51}
+
+    .hint{font-size:12px; color:var(--muted); text-align:center}
+  </style>
+</head>
+<body>
+  <!-- Background slideshow (replace the image URLs as you like) -->
+  <div id="bg" aria-hidden="true">
+    <img src="https://images.unsplash.com/photo-1521334726092-b509a19597d2?q=80&w=1920" class="active" alt=""/>
+    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1920" alt=""/>
+    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920" alt=""/>
+    <img src="https://images.unsplash.com/photo-1519741497678-73092f18f1a5?q=80&w=1920" alt=""/>
+  </div>
+
+  <!-- Top controls -->
+  <div class="topbar">
+    <div class="pill">Swipe left for details</div>
+    <div class="controls">
+      <button id="musicBtn" class="iconbtn" type="button">▶︎ Play music</button>
+    </div>
+  </div>
+
+  <!-- Viewport & slides -->
+  <div class="viewport">
+    <div class="frame">
+      <div id="carousel" class="carousel" role="region" aria-label="Invitation slides">
+        <!-- Slide 1: Cover & Countdown -->
+        <section class="slide">
+          <div class="card" style="text-align:center">
+            <div class="monoline">Tap to start</div>
+            <h1 class="names">Joseph <span style="color:var(--rose)">&</span> Anna‑Maria</h1>
+            <div class="subtitle">are getting married</div>
+            <div class="row" style="justify-content:center; gap:16px; margin-top:10px">
+              <span class="pill">Date: 06/12/2025 — 18:30</span>
+              <a class="pill" target="_blank" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location: كنيسة مار فوقا غدير ↗</a>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Countdown</h2>
+            <div id="countdown" class="countdown" aria-live="polite">
+              <div class="timebox"><div class="num" id="dd">–</div><div class="lbl">Days</div></div>
+              <div class="timebox"><div class="num" id="hh">–</div><div class="lbl">Hours</div></div>
+              <div class="timebox"><div class="num" id="mm">–</div><div class="lbl">Minutes</div></div>
+              <div class="timebox"><div class="num" id="ss">–</div><div class="lbl">Seconds</div></div>
+            </div>
+            <div class="subtitle" id="countdownNote" style="margin-top:8px"></div>
+          </div>
+          <div class="hint">Swipe left for schedule →</div>
+        </section>
+
+        <!-- Slide 2: Schedule & Locations -->
+        <section class="slide">
+          <div class="card">
+            <h2>Schedule</h2>
+            <div class="timeline">
+              <div class="item">
+                <div class="kicker">Ceremony</div>
+                <div><strong>18:30</strong> — كنيسة مار فوقا غدير</div>
+                <a target="_blank" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Open map ↗</a>
+              </div>
+              <div class="item">
+                <div class="kicker">Sword Arch</div>
+                <div><strong>19:30</strong></div>
+              </div>
+              <div class="item">
+                <div class="kicker">Wedding Party</div>
+                <div><strong>21:00</strong> — نادي الضباط جونية</div>
+                <a target="_blank" href="https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5">Open map ↗</a>
+              </div>
+            </div>
+          </div>
+          <div class="hint">Swipe left to RSVP →</div>
+        </section>
+
+        <!-- Slide 3: RSVP (Formspree) -->
+        <section class="slide">
+          <div class="card">
+            <h2>RSVP</h2>
+            <p class="subtitle">Please fill out the form. If you can't attend, let us know as well.</p>
+            <form id="rsvpForm" novalidate>
+              <div class="row" style="gap:12px">
+                <div style="flex:1">
+                  <label for="contactName">Full name *</label>
+                  <input id="contactName" name="contactName" type="text" required placeholder="e.g., John Doe" />
+                </div>
+                <div style="flex:1">
+                  <label for="phone">Phone (WhatsApp) *</label>
+                  <input id="phone" name="phone" type="tel" required placeholder="e.g., +961 3 123 456" />
+                </div>
+              </div>
+              <div>
+                <label>Attendance *</label>
+                <div class="row">
+                  <label><input type="radio" name="attendance" value="Attending" required /> Attending</label>
+                  <label><input type="radio" name="attendance" value="Not Attending" /> Not Attending</label>
+                </div>
+              </div>
+              <div id="guestBlock">
+                <div class="row" style="gap:12px; flex-wrap:wrap">
+                  <div>
+                    <label for="guestCount">Guests (max 2) *</label>
+                    <select id="guestCount" name="guestCount" required>
+                      <option value="">Select…</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                    </select>
+                  </div>
+                  <div style="flex:1; min-width:180px">
+                    <label for="guest1">Guest #1 *</label>
+                    <input id="guest1" name="guest1" type="text" required />
+                  </div>
+                  <div style="flex:1; min-width:180px">
+                    <label for="guest2">Guest #2</label>
+                    <input id="guest2" name="guest2" type="text" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label for="notes">Notes (allergies, dietary needs…)</label>
+                <textarea id="notes" name="notes" rows="3"></textarea>
+              </div>
+              <input type="hidden" name="event" value="Joseph & Anna‑Maria — 06/12/2025 18:30" />
+              <input type="hidden" name="source" value="GitHub Pages RSVP" />
+              <button id="submitBtn" class="btn" type="submit">Press To Confirm</button>
+              <div id="formAlert" role="status" aria-live="polite"></div>
+            </form>
+          </div>
+          <div class="hint">Thank you ♥</div>
+        </section>
+      </div>
+      <div class="dots" aria-hidden="true">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Background music (same as reference; place the MP3 next to index.html) -->
+  <audio id="bgm" preload="none" loop src="invite-music.mp3"></audio>
+
+  <script>
+    // ===== CONFIG =====
+    const FORM_ENDPOINT = "https://formspree.io/f/mblzazgw"; // set from user
+
+    // Background slideshow rotation every 5s
+    const slides = Array.from(document.querySelectorAll('#bg img'));
+    let bgIdx = 0; setInterval(()=>{ slides[bgIdx].classList.remove('active'); bgIdx = (bgIdx+1)%slides.length; slides[bgIdx].classList.add('active'); }, 5000);
+
+    // Mobile carousel with swipe (pointer events)
+    const carousel = document.getElementById('carousel');
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    let index = 0, startX = 0, prevX = 0, dragging = false;
+    const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+    function go(i){ index = clamp(i,0,carousel.children.length-1); carousel.style.transition = 'transform 340ms ease'; carousel.style.transform = `translateX(${-index*100}%)`; dots.forEach((d,di)=>d.classList.toggle('active', di===index)); }
+    function onDown(x){ dragging=true; startX=prevX=x; carousel.style.transition='none'; }
+    function onMove(x){ if(!dragging) return; prevX = x; const dx = prevX-startX; const pct = (dx/window.innerWidth)*100; carousel.style.transform = `translateX(${(-index*100) + pct}%)`; }
+    function onUp(){ if(!dragging) return; dragging=false; const dx = prevX-startX; const threshold = window.innerWidth*0.18; if(Math.abs(dx)>threshold){ if(dx<0){ go(index+1);} else { go(index-1);} } else { go(index);} }
+    carousel.addEventListener('pointerdown', e=>{ if(e.pointerType!=='mouse' || e.buttons===1){ carousel.setPointerCapture(e.pointerId); onDown(e.clientX);} });
+    carousel.addEventListener('pointermove', e=>{ if(dragging){ e.preventDefault(); onMove(e.clientX);} }, {passive:false});
+    carousel.addEventListener('pointerup', onUp);
+    carousel.addEventListener('pointercancel', onUp);
+
+    // Music controls with user gesture
+    const musicBtn = document.getElementById('musicBtn');
+    const bgm = document.getElementById('bgm');
+    let playing = false;
+    async function toggle(){ try{ if(!playing){ await bgm.play(); musicBtn.textContent='⏸︎ Pause music'; } else { bgm.pause(); musicBtn.textContent='▶︎ Play music'; } playing=!playing; }catch(e){ console.warn(e); } }
+    musicBtn.addEventListener('click', toggle);
+    const oncePlay = ()=>{ if(!playing){ toggle(); } window.removeEventListener('click', oncePlay); window.removeEventListener('touchstart', oncePlay); };
+    window.addEventListener('click', oncePlay, {once:true});
+    window.addEventListener('touchstart', oncePlay, {once:true});
+
+    // Countdown (Asia/Beirut UTC+02:00 standard time for Dec 2025)
+    const target = new Date('2025-12-06T18:30:00+02:00');
+    const dd = document.getElementById('dd'), hh = document.getElementById('hh'), mm = document.getElementById('mm'), ss = document.getElementById('ss');
+    const note = document.getElementById('countdownNote');
+    function tick(){
+      const now = new Date();
+      let diff = target - now;
+      if(diff <= 0){ dd.textContent = hh.textContent = mm.textContent = ss.textContent = '0'; note.textContent = "It's time!"; return; }
+      const d = Math.floor(diff/86400000); diff%=86400000;
+      const h = Math.floor(diff/3600000); diff%=3600000;
+      const m = Math.floor(diff/60000); diff%=60000;
+      const s = Math.floor(diff/1000);
+      dd.textContent = d; hh.textContent = h; mm.textContent = m; ss.textContent = s;
+    }
+    tick(); setInterval(tick, 1000);
+
+    // ====== RSVP (Formspree JSON) ======
+    const $ = (sel, el=document)=>el.querySelector(sel), $$ = (sel, el=document)=>[...el.querySelectorAll(sel)];
+    const form = $('#rsvpForm'); if(form){
+      const alertBox = $('#formAlert'); const submitBtn = $('#submitBtn');
+      const guestBlock = $('#guestBlock'); const guestCount = $('#guestCount'); const guest1 = $('#guest1'); const guest2 = $('#guest2');
+      function setAlert(type, msg){ alertBox.className = type; alertBox.textContent = msg; }
+      function toggleGuests(){ const attending = form.attendance.value==='Attending'; guestBlock.style.display = attending? 'block':'none'; [guestCount, guest1, guest2].forEach(i=>{ i.required = attending && (i!==guest2 || guestCount.value==='2'); }); if(!attending){ guestCount.value=''; guest1.value=''; guest2.value=''; } }
+      $$('input[name=attendance]').forEach(r=>r.addEventListener('change', toggleGuests));
+      guestCount.addEventListener('change', ()=>{ guest2.required = guestCount.value==='2'; });
+      toggleGuests();
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault(); setAlert('', ''); if(!FORM_ENDPOINT){ setAlert('error','Form endpoint missing.'); return; }
+        if(!form.checkValidity()){ setAlert('error','Please fill the required fields.'); form.reportValidity(); return; }
+        submitBtn.disabled=true; submitBtn.textContent='Sending…';
+        const data = {
+          contactName: form.contactName.value.trim(),
+          phone: form.phone.value.trim(),
+          attendance: form.attendance.value,
+          guestCount: form.attendance.value==='Attending'? guestCount.value : '0',
+          guest1: form.attendance.value==='Attending'? guest1.value.trim() : '',
+          guest2: form.attendance.value==='Attending'? guest2.value.trim() : '',
+          notes: form.notes.value.trim(),
+          event: form.event.value,
+          source: form.source.value
+        };
+        try{
+          const res = await fetch(FORM_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(data) });
+          if(res.ok){ setAlert('success','Thank you! Your RSVP has been recorded.'); submitBtn.textContent='Submitted'; form.reset(); toggleGuests(); }
+          else{ const err = await res.json().catch(()=>({})); throw new Error(err.error || `Submission failed (${res.status})`); }
+        }catch(err){ console.error(err); setAlert('error', err.message || 'Something went wrong. Please try again.'); submitBtn.textContent='Press To Confirm'; }
+        finally{ submitBtn.disabled=false; }
+      });
+    }
+  </script>
+</body>
+</html>
