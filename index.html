@@ -11,10 +11,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Parisienne&display=swap" rel="stylesheet">
   <style>
-    /* ===== MOBILE‑FIRST (TUNED FOR ANDROID / SAMSUNG A55) ===== */
+    /* ===== MOBILE‑FIRST (TUNED FOR SAMSUNG A55) ===== */
     :root{
       --bg:#0d0f12; --text:#f6f6f8; --muted:#9aa0ac; --gold:#e9c46a; --rose:#ff7a66; --brand:#8ecae6;
-      --card:rgba(255,255,255,.06); --stroke:rgba(255,255,255,.12); --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+      --card:rgba(255,255,255,.06); --stroke:rgba(255,255,255,.12); --radius:20px; --shadow:0 10px 30px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
     html,body{height:100%}
@@ -42,7 +42,8 @@
     /* Carousel */
     .viewport{position:relative; height:100%;}
     .carousel{height:100%; display:flex; transform:translateX(0); transition:transform 320ms ease; touch-action:none; user-select:none}
-    .slide{min-width:100%; height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:12px}
+    .slide{min-width:100%; min-height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:12px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(env(safe-area-inset-bottom,0) + 8px)}
+    .slide::-webkit-scrollbar{width:0;height:0}
 
     /* Card */
     .card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid var(--stroke); border-radius:20px; box-shadow:var(--shadow); padding:18px}
@@ -105,7 +106,7 @@
               <h1 class="names">Joseph <span style="color:var(--rose)">&</span> Anna‑Maria</h1>
               <div class="subtitle">are getting married</div>
               <div class="row" style="justify-content:center; gap:10px; margin-top:8px">
-                <span class="pill">Date: 06/12/2024 — 18:30</span>
+                <span class="pill">Date: 06/12/2025 — 18:30</span>
                 <a class="pill" target="_blank" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location: كنيسة مار فوقا غدير ↗</a>
               </div>
             </div>
@@ -193,7 +194,7 @@
                   <label for="notes">Notes (allergies, dietary needs…)</label>
                   <textarea id="notes" name="notes" rows="3"></textarea>
                 </div>
-                <input type="hidden" name="event" value="Joseph & Anna‑Maria — 06/12/2024 18:30" />
+                <input type="hidden" name="event" value="Joseph & Anna‑Maria — 06/12/2025 18:30" />
                 <input type="hidden" name="source" value="GitHub Pages RSVP" />
                 <button id="submitBtn" class="btn" type="submit">Press To Confirm</button>
                 <div id="formAlert" role="status" aria-live="polite"></div>
@@ -236,15 +237,15 @@
     carousel.addEventListener('pointerup', onUp);
     carousel.addEventListener('pointercancel', onUp);
 
-    // Background music — attempt autoplay, then start on first user gesture if blocked
+    // Background music — start automatically when allowed; otherwise on first tap
     const bgm = document.getElementById('bgm');
     async function tryPlay(){ try{ if(bgm && bgm.paused){ await bgm.play(); } }catch(e){} }
     window.addEventListener('load', tryPlay, {once:true});
     window.addEventListener('touchstart', tryPlay, {once:true});
     window.addEventListener('click', tryPlay, {once:true});
 
-    // Countdown (Asia/Beirut UTC+02:00 for Dec 2024)
-    const target = new Date('2024-12-06T18:30:00+02:00');
+    // Countdown updated to 2025 (Asia/Beirut UTC+02:00 for Dec 2025)
+    const target = new Date('2025-12-06T18:30:00+02:00');
     const dd = document.getElementById('dd'), hh = document.getElementById('hh'), mm = document.getElementById('mm'), ss = document.getElementById('ss');
     const note = document.getElementById('countdownNote');
     function tick(){
