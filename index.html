@@ -2,13 +2,15 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
+  <!-- MOBILE VIEWPORT: phone width, no forced desktop scale -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0d0f12" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="format-detection" content="telephone=no" />
   <title>Joseph & Anna‑Maria — Wedding Invitation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Same fonts/feel as the reference -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Parisienne&display=swap" rel="stylesheet">
   <style>
     /* ===== MOBILE‑ONLY (PORTRAIT) — no images, same phrases/fonts ===== */
@@ -27,12 +29,18 @@
     .frame{width:100vw; height:100%; display:grid; grid-template-rows:1fr auto; padding:12px calc(env(safe-area-inset-right,0) + 12px) 12px calc(env(safe-area-inset-left,0) + 12px)}
 
     /* Top hint */
-    .top{position:fixed; top:10px; left:12px; right:12px; display:flex; justify-content:center; z-index:2}
+    .top{position:fixed; top:10px; left:12px; right:12px; display:flex; justify-content:center; z-index:3}
     .pill{background:rgba(0,0,0,.42); border:1px solid var(--stroke); color:var(--muted); border-radius:999px; padding:10px 14px; font-size:14px}
+
+    /* Tap-to-start overlay (enables one‑tap music & explains gesture) */
+    .start{position:fixed; inset:0; z-index:4; display:grid; place-items:center; background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.55));}
+    .start .inner{border:1px solid var(--stroke); background:rgba(0,0,0,.55); backdrop-filter:blur(4px); border-radius:22px; padding:18px 20px; text-align:center; box-shadow:var(--shadow)}
+    .start .title{font-family:Parisienne, serif; font-size:42px; color:var(--gold)}
+    .start .btn{margin-top:10px; background:linear-gradient(180deg, #2a2a33, #1a1a22); border:1px solid var(--stroke); color:var(--text); border-radius:12px; padding:12px 16px; font-weight:700; font-size:14px}
 
     /* Carousel */
     .viewport{position:relative; height:100%}
-    .carousel{height:100%; display:flex; transform:translateX(0); transition:transform 320ms ease; touch-action:none; user-select:none}
+    .carousel{height:100%; display:flex; transform:translateX(0); transition:transform 320ms ease; user-select:none; touch-action:pan-y}
     .slide{min-width:100%; min-height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:12px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(env(safe-area-inset-bottom,0) + 10px)}
     .slide::-webkit-scrollbar{width:0;height:0}
 
@@ -76,14 +84,22 @@
   </style>
 </head>
 <body>
-  <!-- No images background: gradient only -->
+  <!-- Tap to start overlay (matches reference behavior) -->
+  <div id="start" class="start">
+    <div class="inner">
+      <div class="title">Tap to start</div>
+      <div class="subtitle" style="margin-top:6px">Swipe left for details</div>
+      <button id="startBtn" class="btn" type="button" style="margin-top:12px">Start</button>
+    </div>
+  </div>
+
   <div class="top"><div class="pill">Swipe left for details</div></div>
 
   <div class="app">
     <div class="frame">
       <div class="viewport">
         <div id="carousel" class="carousel" role="region" aria-label="Invitation slides">
-          <!-- Slide 1: Cover + Countdown -->
+          <!-- Slide 1: Cover + COUNTDOWN -->
           <section class="slide">
             <div class="card" style="text-align:center">
               <div class="monoline">Tap to start</div>
@@ -110,7 +126,7 @@
           <!-- Slide 2: Schedule & Locations -->
           <section class="slide">
             <div class="card">
-              <h2>Schedule</h2>
+              <h2>Wedding Ceremony</h2>
               <div class="timeline">
                 <div class="item">
                   <div class="kicker">Ceremony</div>
@@ -131,7 +147,7 @@
             <div class="hint">Swipe left to RSVP →</div>
           </section>
 
-          <!-- Slide 3: RSVP -->
+          <!-- Slide 3: RSVP (Formspree) -->
           <section class="slide">
             <div class="card">
               <h2>RSVP</h2>
@@ -203,7 +219,7 @@
     // ===== CONFIG =====
     const FORM_ENDPOINT = "https://formspree.io/f/mblzazgw"; // your Formspree ID
 
-    // Swipe carousel (pointer events)
+    // Swipe carousel (pointer events). touch-action: pan-y enables one-finger horizontal swipes
     const carousel = document.getElementById('carousel');
     const dots = Array.from(document.querySelectorAll('.dot'));
     let index = 0, startX = 0, prevX = 0, dragging = false;
@@ -212,17 +228,22 @@
     function onDown(x){ dragging=true; startX=prevX=x; carousel.style.transition='none'; }
     function onMove(x){ if(!dragging) return; prevX = x; const dx = prevX-startX; const pct = (dx/window.innerWidth)*100; carousel.style.transform = `translateX(${(-index*100) + pct}%)`; }
     function onUp(){ if(!dragging) return; dragging=false; const dx = prevX-startX; const threshold = window.innerWidth*0.18; if(Math.abs(dx)>threshold){ if(dx<0){ go(index+1);} else { go(index-1);} } else { go(index);} }
-    carousel.addEventListener('pointerdown', e=>{ if(e.pointerType!=='mouse' || e.buttons===1){ carousel.setPointerCapture(e.pointerId); onDown(e.clientX);} });
+    carousel.addEventListener('pointerdown', e=>{ if(e.isPrimary){ carousel.setPointerCapture(e.pointerId); onDown(e.clientX);} });
     carousel.addEventListener('pointermove', e=>{ if(dragging){ e.preventDefault(); onMove(e.clientX);} }, {passive:false});
     carousel.addEventListener('pointerup', onUp);
     carousel.addEventListener('pointercancel', onUp);
 
-    // Music — start automatically when allowed; otherwise on first tap
+    // Tap-to-start: starts music and dismisses overlay
+    const startEl = document.getElementById('start');
+    const startBtn = document.getElementById('startBtn');
     const bgm = document.getElementById('bgm');
-    async function tryPlay(){ try{ if(bgm && bgm.paused){ await bgm.play(); } }catch(e){} }
-    window.addEventListener('load', tryPlay, {once:true});
-    window.addEventListener('touchstart', tryPlay, {once:true});
-    window.addEventListener('click', tryPlay, {once:true});
+    async function begin(){
+      try{ await bgm.play(); }catch(_){}
+      startEl.style.opacity='0'; startEl.style.transition='opacity 240ms ease';
+      setTimeout(()=>{ startEl.style.display='none'; }, 260);
+    }
+    startBtn.addEventListener('click', begin);
+    startEl.addEventListener('click', begin);
 
     // Countdown to 2025‑12‑06 18:30 (Asia/Beirut)
     const target = new Date('2025-12-06T18:30:00+02:00');
