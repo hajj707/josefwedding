@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
   <meta name="theme-color" content="#0d0f12" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="format-detection" content="telephone=no" />
@@ -11,42 +11,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&family=Parisienne&display=swap" rel="stylesheet">
   <style>
-    /* ===== MOBILE‑FIRST (TUNED FOR SAMSUNG A55) ===== */
+    /* ===== MOBILE‑ONLY (PORTRAIT) — no images, same phrases/fonts ===== */
     :root{
-      --bg:#0d0f12; --text:#f6f6f8; --muted:#9aa0ac; --gold:#e9c46a; --rose:#ff7a66; --brand:#8ecae6;
-      --card:rgba(255,255,255,.06); --stroke:rgba(255,255,255,.12); --radius:20px; --shadow:0 10px 30px rgba(0,0,0,.35);
+      --bg1:#0d0f12; --bg2:#151923; --text:#f6f6f8; --muted:#a3a9b4; --gold:#e9c46a; --rose:#ff7a66; --brand:#8ecae6; --stroke:rgba(255,255,255,.12);
+      --radius:20px; --shadow:0 10px 30px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
     html,body{height:100%}
-    body{
-      margin:0; color:var(--text);
-      font-family:Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
-      font-size:16px; line-height:1.6; background:var(--bg);
-      overflow:hidden; overscroll-behavior:none;
-    }
+    body{margin:0; color:var(--text); background:linear-gradient(180deg,var(--bg1),var(--bg2));
+         font-family:Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
+         font-size:16px; line-height:1.6; overflow:hidden; overscroll-behavior:none}
 
-    /* Fullscreen app stage */
-    .app{position:fixed; inset:0; height:100dvh; width:100vw; display:grid; place-items:center;}
-    .frame{width:100vw; height:100%; display:grid; grid-template-rows:1fr auto; padding:12px calc(env(safe-area-inset-right,0) + 12px) 12px calc(env(safe-area-inset-left,0) + 12px);}
-
-    /* Background slideshow */
-    #bg{position:fixed; inset:0; z-index:-2;}
-    #bg img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 900ms ease; filter:brightness(.72)}
-    #bg img.active{opacity:1}
-    #bg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.45))}
+    /* Fullscreen mobile stage */
+    .app{position:fixed; inset:0; width:100vw; height:100dvh; display:grid; place-items:center}
+    .frame{width:100vw; height:100%; display:grid; grid-template-rows:1fr auto; padding:12px calc(env(safe-area-inset-right,0) + 12px) 12px calc(env(safe-area-inset-left,0) + 12px)}
 
     /* Top hint */
     .top{position:fixed; top:10px; left:12px; right:12px; display:flex; justify-content:center; z-index:2}
     .pill{background:rgba(0,0,0,.42); border:1px solid var(--stroke); color:var(--muted); border-radius:999px; padding:10px 14px; font-size:14px}
 
     /* Carousel */
-    .viewport{position:relative; height:100%;}
+    .viewport{position:relative; height:100%}
     .carousel{height:100%; display:flex; transform:translateX(0); transition:transform 320ms ease; touch-action:none; user-select:none}
-    .slide{min-width:100%; min-height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:12px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(env(safe-area-inset-bottom,0) + 8px)}
+    .slide{min-width:100%; min-height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:12px; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(env(safe-area-inset-bottom,0) + 10px)}
     .slide::-webkit-scrollbar{width:0;height:0}
 
-    /* Card */
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid var(--stroke); border-radius:20px; box-shadow:var(--shadow); padding:18px}
+    /* Cards & typography */
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid var(--stroke); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
     h1.names{font-family:Cinzel, serif; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; margin:6px 0 2px; font-size:clamp(30px,7vw,48px); text-align:center}
     .monoline{font-family:Parisienne, serif; font-size:clamp(42px,11vw,64px); color:var(--gold); text-align:center}
     h2{font-family:Cinzel, serif; font-size:20px; letter-spacing:.8px; text-transform:uppercase; margin:0 0 8px}
@@ -85,14 +76,7 @@
   </style>
 </head>
 <body>
-  <!-- Background slideshow -->
-  <div id="bg" aria-hidden="true">
-    <img src="https://images.unsplash.com/photo-1521334726092-b509a19597d2?q=80&w=1920" class="active" alt=""/>
-    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1920" alt=""/>
-    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920" alt=""/>
-    <img src="https://images.unsplash.com/photo-1519741497678-73092f18f1a5?q=80&w=1920" alt=""/>
-  </div>
-
+  <!-- No images background: gradient only -->
   <div class="top"><div class="pill">Swipe left for details</div></div>
 
   <div class="app">
@@ -111,7 +95,7 @@
               </div>
             </div>
             <div class="card">
-              <h2>Countdown</h2>
+              <h2>COUNTDOWN</h2>
               <div id="countdown" class="countdown" aria-live="polite">
                 <div class="timebox"><div class="num" id="dd">–</div><div class="lbl">Days</div></div>
                 <div class="timebox"><div class="num" id="hh">–</div><div class="lbl">Hours</div></div>
@@ -212,18 +196,14 @@
     </div>
   </div>
 
-  <!-- Background music: keep the file next to index.html and named exactly invite-music.mp3 -->
+  <!-- Background music: file next to index.html named invite-music.mp3 -->
   <audio id="bgm" preload="auto" loop playsinline src="invite-music.mp3"></audio>
 
   <script>
     // ===== CONFIG =====
     const FORM_ENDPOINT = "https://formspree.io/f/mblzazgw"; // your Formspree ID
 
-    // Background slideshow rotation every 5s
-    const slides = Array.from(document.querySelectorAll('#bg img'));
-    let bgIdx = 0; setInterval(()=>{ slides[bgIdx].classList.remove('active'); bgIdx = (bgIdx+1)%slides.length; slides[bgIdx].classList.add('active'); }, 5000);
-
-    // Mobile swipe carousel (pointer events)
+    // Swipe carousel (pointer events)
     const carousel = document.getElementById('carousel');
     const dots = Array.from(document.querySelectorAll('.dot'));
     let index = 0, startX = 0, prevX = 0, dragging = false;
@@ -237,14 +217,14 @@
     carousel.addEventListener('pointerup', onUp);
     carousel.addEventListener('pointercancel', onUp);
 
-    // Background music — start automatically when allowed; otherwise on first tap
+    // Music — start automatically when allowed; otherwise on first tap
     const bgm = document.getElementById('bgm');
     async function tryPlay(){ try{ if(bgm && bgm.paused){ await bgm.play(); } }catch(e){} }
     window.addEventListener('load', tryPlay, {once:true});
     window.addEventListener('touchstart', tryPlay, {once:true});
     window.addEventListener('click', tryPlay, {once:true});
 
-    // Countdown updated to 2025 (Asia/Beirut UTC+02:00 for Dec 2025)
+    // Countdown to 2025‑12‑06 18:30 (Asia/Beirut)
     const target = new Date('2025-12-06T18:30:00+02:00');
     const dd = document.getElementById('dd'), hh = document.getElementById('hh'), mm = document.getElementById('mm'), ss = document.getElementById('ss');
     const note = document.getElementById('countdownNote');
