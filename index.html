@@ -15,15 +15,15 @@
     :root{
       --bg:#0d0f12; --text:#f6f6f8; --muted:#9aa0ac; --gold:#e9c46a; --rose:#ff7a66; --brand:#8ecae6;
       --card:rgba(255,255,255,.06); --stroke:rgba(255,255,255,.12); --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
-      --maxw:480px; /* hard cap for mobile layout */
+      --maxw:100vw; /* use full phone width */
     }
     *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
     html,body{height:100%}
-    body{margin:0; color:var(--text); font-family:Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial; line-height:1.55; overflow:hidden; overscroll-behavior:none; background:var(--bg)}
+    body{margin:0; color:var(--text); font-family:Montserrat, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial; font-size:16px; line-height:1.6; overflow:hidden; overscroll-behavior:none; background:var(--bg)}
 
     /* Fullscreen mobile viewport */
     .app{position:fixed; inset:0; height:100svh; width:100vw; display:grid; place-items:center;}
-    .phone{width:100%; max-width:var(--maxw); height:100%; display:grid; grid-template-rows:1fr auto; padding:12px;}
+    .phone{width:100vw; max-width:100vw; height:100%; display:grid; grid-template-rows:1fr auto; padding:16px;}
 
     /* Background slideshow */
     #bg{position:fixed; inset:0; z-index:-2;}
@@ -41,9 +41,8 @@
     .slide{min-width:100%; height:100%; display:grid; grid-template-rows:auto 1fr auto; gap:12px}
 
     /* Card */
-    .card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid var(--stroke); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px}
-    h1.names{font-family:Cinzel, serif; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; margin:6px 0 2px; font-size:26px; text-align:center}
-    .monoline{font-family:Parisienne, serif; font-size:40px; color:var(--gold); text-align:center}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); border:1px solid var(--stroke); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px}
+    .monoline{font-family:Parisienne, serif; font-size:clamp(36px,10vw,56px); color:var(--gold); text-align:center}
     h2{font-family:Cinzel, serif; font-size:18px; letter-spacing:.8px; text-transform:uppercase; margin:0 0 8px}
     .subtitle{color:var(--muted); font-size:13px; text-align:center}
     .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
@@ -53,7 +52,7 @@
     /* Countdown */
     .countdown{display:flex; gap:8px; justify-content:center; flex-wrap:wrap}
     .timebox{display:grid; gap:4px; text-align:center; padding:8px 10px; border-radius:12px; background:rgba(0,0,0,.35); border:1px solid var(--stroke); min-width:64px}
-    .timebox .num{font-size:22px; font-weight:700}
+    .timebox .num{font-size:24px; font-weight:700}
     .timebox .lbl{font-size:10px; color:var(--muted)}
 
     /* Timeline */
@@ -63,7 +62,7 @@
 
     /* Dots */
     .dots{display:flex; justify-content:center; gap:6px; padding:6px 0}
-    .dot{width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.35)}
+    .dot{width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.35)}
     .dot.active{background:var(--rose)}
 
     /* Form */
