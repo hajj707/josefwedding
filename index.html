@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Joseph & Anna‑Maria — Wedding Invitation (Mobile)</title>
+  <title>Joseph & Anna-Maria — Wedding Invitation (Mobile)</title>
   <meta name="description" content="Mobile swipe wedding invitation with menu, music, maps, and RSVP (Formspree)." />
 
   <!-- Fonts -->
@@ -18,18 +18,22 @@
       --panel2: rgba(0,0,0,.40);
       --border: rgba(255,255,255,.75);
       --dots-y: 48px;
+      --count: 8; /* number of slides */
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
-    body{font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji',sans-serif;color:#fff;background:#000;overflow:hidden;-webkit-tap-highlight-color: transparent}
+    body{
+      font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji',sans-serif;
+      color:#fff;background:#000;overflow:hidden;-webkit-tap-highlight-color: transparent;
+    }
 
-    /* Background slideshow */
+    /* Background slideshow (behind everything) */
     .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
     .bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
     .bg img.active{opacity:1}
     .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.60))}
 
-    /* Mobile frame to ensure ONE PAGE AT A TIME on any device */
+    /* Mobile frame */
     .frame{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
     .phone{position:relative;width:100vw;height:100dvh;overflow:hidden;z-index:1}
 
@@ -44,10 +48,21 @@
     /* Swipe hint */
     .hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:13px;opacity:.9;z-index:5}
 
-    /* Slider (mobile) */
+    /* Slider */
     .slider{position:relative;height:100%;width:100%;touch-action:pan-y;overflow:hidden}
-    .slides{display:flex;height:100%;transition:transform .45s ease}
-    .slide{position:relative;flex:0 0 100%;width:100%;height:100%;padding:24px 18px env(safe-area-inset-bottom);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    .slides{
+      display:flex;height:100%;
+      width:calc(var(--count) * 100%);           /* container = sum of all slides */
+      transition:transform .45s ease;
+    }
+    .slide{
+      position:relative;
+      flex:0 0 calc(100% / var(--count));        /* each slide = 1/var(--count) */
+      width:calc(100% / var(--count));
+      height:100%;
+      padding:24px 18px env(safe-area-inset-bottom);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center
+    }
 
     /* Typography */
     .script{font-family:'Great Vibes',cursive;letter-spacing:.4px}
@@ -57,12 +72,11 @@
     .sm{font-size:18px}
     .muted{color:var(--muted)}
 
-    /* add readable stroke around headings on bright photos */
+    /* readable on bright photos */
     .script,.title{ text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 2px 12px rgba(0,0,0,.55); }
 
     .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border-radius:999px;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
     .card{background:var(--panel);border-radius:18px;padding:16px 14px;box-shadow:0 6px 20px rgba(0,0,0,.2);backdrop-filter:saturate(110%) blur(2px)}
-
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;background:transparent;border:1px solid var(--border);color:#fff;font-weight:600;text-decoration:none}
 
     /* Dots */
@@ -98,7 +112,7 @@
   </style>
 </head>
 <body>
-  <!-- Background slideshow — use your two uploaded files placed NEXT TO index.html -->
+  <!-- Background slideshow -->
   <div class="bg" aria-hidden="true">
     <img src="photo_2025-10-09_11-19-39.jpg" class="active" alt=""/>
     <img src="photo_2025-10-09_11-19-49.jpg" alt=""/>
@@ -106,12 +120,12 @@
 
   <div class="frame">
     <div class="phone" id="phone">
-      <!-- Top-left hamburger -->
+      <!-- Hamburger -->
       <div class="topbar"><button id="menuBtn" class="hamburger" aria-label="Open menu"><span></span></button></div>
-      <!-- Bottom-left music toggle -->
+      <!-- Music toggle -->
       <button id="musicBtn" class="music" aria-label="Toggle music">♪</button>
 
-      <!-- Menu panel (first 7 pages) -->
+      <!-- Menu (first 7 pages) -->
       <nav class="menu" id="menu">
         <button class="close btn" id="closeMenu">✕</button>
         <a href="#" data-slide="0">Home</a>
@@ -126,11 +140,10 @@
       <!-- Slider -->
       <main class="slider" id="slider" role="region" aria-roledescription="carousel" aria-label="Wedding invitation">
         <section class="slides" id="slides" aria-live="polite">
-
           <!-- 1. Home -->
           <article class="slide" aria-label="Home">
             <div class="chip">With love</div>
-            <h1 class="script lg" style="margin:14px 0 6px;">Joseph &amp; Anna‑Maria</h1>
+            <h1 class="script lg" style="margin:14px 0 6px;">Joseph &amp; Anna-Maria</h1>
             <div class="title sm muted">are getting married</div>
           </article>
 
@@ -138,7 +151,7 @@
           <article class="slide" aria-label="Names">
             <h2 class="script lg">Joseph</h2>
             <h2 class="script lg" style="margin-top:-6px;">&amp;</h2>
-            <h2 class="script lg" style="margin-top:-6px;">Anna‑Maria</h2>
+            <h2 class="script lg" style="margin-top:-6px;">Anna-Maria</h2>
             <div class="title sm muted" style="margin-top:10px;">are getting married</div>
           </article>
 
@@ -148,7 +161,7 @@
             <div class="title md" style="margin:12px 0 2px;">With joyous hearts,</div>
             <div class="title md"><strong>Gemayel &amp; Elias families</strong></div>
             <div class="title sm muted" style="margin-top:8px;">request your presence to attend the wedding of</div>
-            <div class="script lg" style="margin:14px 0 8px;">Joseph &amp; Anna‑Maria</div>
+            <div class="script lg" style="margin:14px 0 8px;">Joseph &amp; Anna-Maria</div>
             <div class="title sm">on December 6, 2025</div>
             <div class="muted">at 6:30 pm</div>
           </article>
@@ -196,16 +209,14 @@
             </div>
 
             <form id="rsvp" action="https://formspree.io/f/mblzazgw" method="POST" novalidate>
-              <input type="hidden" name="invite" value="Joseph & Anna‑Maria — 6 Dec 2025" />
+              <input type="hidden" name="invite" value="Joseph & Anna-Maria — 6 Dec 2025" />
               <input type="hidden" name="attending" id="attending" value="Attending" />
-
               <label>Number of Guests Attending
                 <select name="guests" id="guests">
                   <option value="1">1</option>
                   <option value="2" selected>2</option>
                 </select>
               </label>
-
               <label>Guest #1<input name="guest1" id="guest1" placeholder="Full name" required /></label>
               <label id="guest2-wrap">Guest #2<input name="guest2" id="guest2" placeholder="Full name" required /></label>
               <label>Phone Number<input name="phone" inputmode="tel" placeholder="+961 …" /></label>
@@ -222,7 +233,6 @@
             </div>
             <div class="title sm" style="position:absolute;bottom:70px;left:0;right:0;opacity:.9;">Made by InviteMe</div>
           </article>
-
         </section>
         <div class="dots" id="dots" aria-hidden="true"></div>
         <div class="hint">Swipe Left</div>
@@ -247,10 +257,11 @@
   // ===== Slider logic (mobile) =====
   var slidesEl = document.getElementById('slides');
   var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
-  // each page shows separately and fills the phone width
-  slidesEl.style.width = (slides.length * 100) + '%';
+  // keep CSS variable in sync (safety if you add/remove slides)
+  document.documentElement.style.setProperty('--count', String(slides.length));
   var dotsEl = document.getElementById('dots');
   var index = 0, startX=0, curX=0, dragging=false;
+  var step = 100 / slides.length; // percentage to move per slide
 
   function renderDots(){
     dotsEl.innerHTML = '';
@@ -261,7 +272,7 @@
     }
   }
   function updateSlider(){
-    slidesEl.style.transform = 'translateX(-' + (index*100) + '%)';
+    slidesEl.style.transform = 'translateX(-' + (index*step) + '%)';
     var dots = dotsEl.children;
     for (var i=0;i<dots.length;i++){ dots[i].classList.toggle('active', i===index); }
   }
@@ -296,7 +307,7 @@
     var p = audio.play();
     if (p && typeof p.then === 'function'){
       p.then(function(){ if (autoKick){ clearInterval(autoKick); autoKick = null; } refreshMusicIcon(); })
-       .catch(function(){ /* autoplay may be blocked on some iOS versions until first interaction */ });
+       .catch(function(){ /* iOS may block audible autoplay until first interaction */ });
     }
   }
   function refreshMusicIcon(){ musicBtn.textContent = (audio && !audio.paused) ? '♪' : '♫'; }
@@ -309,7 +320,7 @@
   audio.addEventListener('pause', refreshMusicIcon);
   refreshMusicIcon();
 
-  // ===== RSVP toggle logic (no optional chaining for older browsers) =====
+  // ===== RSVP toggle logic (no optional chaining) =====
   var attendingHidden = document.getElementById('attending');
   var guestsSel = document.getElementById('guests');
   var guest2Wrap = document.getElementById('guest2-wrap');
@@ -343,6 +354,6 @@
   }
   if (guestsSel) guestsSel.addEventListener('change', syncGuestsUI);
   syncGuestsUI();
-</script>
+  </script>
 </body>
 </html>
