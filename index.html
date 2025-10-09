@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Joseph & Anna‑Maria — Wedding Invitation</title>
-  <meta name="description" content="Mobile swipe wedding invitation with music, countdown, menu, maps, RSVP (Formspree)." />
+  <meta name="description" content="Mobile swipe wedding invitation with music, menu, maps, and RSVP (Formspree)." />
 
-  <!-- Fonts to imitate the reference style: script for headings, serif for titles, sans for body -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -17,33 +17,37 @@
       --panel: rgba(0,0,0,.55);
       --panel2: rgba(0,0,0,.40);
       --border: rgba(255,255,255,.75);
-      --ghost: rgba(0,0,0,.28);
+      --dots-y: 48px;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
-    body{font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji',sans-serif;color:#fff;background:#000;overflow:hidden}
+    body{font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji',sans-serif;color:#fff;background:#000;overflow:hidden;-webkit-tap-highlight-color: transparent}
 
-    /* Background */
+    /* Background slideshow */
     .bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
     .bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
     .bg img.active{opacity:1}
     .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.45))}
 
-    /* Top bar */
-    .topbar{position:fixed;left:10px;top:10px;z-index:20}
+    /* Mobile frame to ensure single-page view on any device */
+    .frame{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+    .phone{position:relative;width:100vw;height:100dvh;overflow:hidden}
+
+    /* Top-left hamburger */
+    .topbar{position:absolute;left:10px;top:10px;z-index:20}
     .hamburger{width:36px;height:36px;border-radius:8px;background:var(--panel);display:grid;place-items:center;border:1px solid var(--border)}
     .hamburger span{display:block;width:18px;height:2px;background:#fff;box-shadow:0 6px 0 #fff,0 -6px 0 #fff}
 
     /* Music toggle */
-    .music{position:fixed;left:10px;bottom:10px;z-index:20;width:36px;height:36px;border-radius:8px;background:var(--panel);display:grid;place-items:center;border:1px solid var(--border);font-size:18px}
+    .music{position:absolute;left:10px;bottom:10px;z-index:20;width:36px;height:36px;border-radius:8px;background:var(--panel);display:grid;place-items:center;border:1px solid var(--border);font-size:18px}
 
     /* Swipe hint */
-    .hint{position:fixed;left:0;right:0;bottom:18px;text-align:center;font-size:13px;opacity:.9;z-index:5}
+    .hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:13px;opacity:.9;z-index:5}
 
-    /* Slider */
-    .slider{position:relative;height:100dvh;width:100vw;touch-action:pan-y}
-    .slides{display:flex;height:100%}
-    .slide{position:relative;width:100vw;height:100%;padding:24px 18px env(safe-area-inset-bottom);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    /* Slider (mobile only interaction) */
+    .slider{position:relative;height:100%;width:100%;touch-action:pan-y;overflow:hidden}
+    .slides{display:flex;height:100%;transition:transform .45s ease}
+    .slide{position:relative;flex:0 0 100%;width:100%;height:100%;padding:24px 18px env(safe-area-inset-bottom);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
 
     /* Typography */
     .script{font-family:'Great Vibes',cursive;letter-spacing:.4px}
@@ -58,23 +62,21 @@
 
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;background:transparent;border:1px solid var(--border);color:#fff;font-weight:600;text-decoration:none}
 
-    .dots{position:fixed;left:0;right:0;bottom:48px;display:flex;justify-content:center;gap:6px;z-index:5}
+    /* Dots */
+    .dots{position:absolute;left:0;right:0;bottom:var(--dots-y);display:flex;justify-content:center;gap:6px;z-index:5}
     .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}
     .dot.active{background:#fff}
 
     /* Icons */
     .icon{font-size:22px;margin-bottom:8px;opacity:.95}
 
-    /* Grid for detail cards */
-    .grid{display:grid;gap:10px;grid-template-columns:1fr 1fr}
-
     /* Menu panel */
-    .menu{position:fixed;inset:8px;z-index:40;background:rgba(0,0,0,.82);border:2px solid var(--border);border-radius:16px;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    .menu{position:absolute;inset:8px;z-index:40;background:rgba(0,0,0,.82);border:2px solid var(--border);border-radius:16px;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center}
     .menu a{display:block;font-family:'Playfair Display',serif;font-size:24px;margin:12px 0;color:#fff;text-decoration:none}
     .menu .close{position:absolute;left:12px;top:12px;font-size:22px}
     .menu-open .menu{display:flex}
 
-    /* Polaroid card */
+    /* Polaroid */
     .polaroid{background:#f6f6f6;color:#111;border-radius:12px;padding:10px 10px 16px;width:min(280px,82vw);transform:rotate(-6deg);box-shadow:0 10px 26px rgba(0,0,0,.35)}
     .polaroid img{display:block;width:100%;height:360px;object-fit:cover;border-radius:8px}
     .polaroid .cap{text-align:center;margin-top:8px;font-family:'Playfair Display',serif}
@@ -93,150 +95,150 @@
   </style>
 </head>
 <body>
-  <!-- Background slideshow (replace with your images) -->
+  <!-- Background slideshow (uses your two uploaded photos) -->
   <div class="bg" aria-hidden="true">
-    <img src="images/bg1.jpg" class="active" alt=""/>
-    <img src="images/bg2.jpg" alt=""/>
-    <img src="images/bg3.jpg" alt=""/>
+    <img src="images/photo_2025-10-09_11-19-39.jpg" class="active" alt=""/>
+    <img src="images/photo_2025-10-09_11-19-49.jpg" alt=""/>
   </div>
 
-  <!-- Top-left hamburger -->
-  <div class="topbar"><button id="menuBtn" class="hamburger" aria-label="Open menu"><span></span></button></div>
-  <!-- Bottom-left music toggle -->
-  <button id="musicBtn" class="music" aria-label="Toggle music">♪</button>
+  <div class="frame">
+    <div class="phone" id="phone">
+      <!-- Top-left hamburger -->
+      <div class="topbar"><button id="menuBtn" class="hamburger" aria-label="Open menu"><span></span></button></div>
+      <!-- Bottom-left music toggle -->
+      <button id="musicBtn" class="music" aria-label="Toggle music">♪</button>
 
-  <!-- Menu panel -->
-  <nav class="menu" id="menu">
-    <button class="close btn" id="closeMenu">✕</button>
-    <a href="#" data-slide="0">Home</a>
-    <a href="#" data-slide="2">Invitation</a>
-    <a href="#" data-slide="3">Wedding Ceremony</a>
-    <a href="#" data-slide="4">Wedding Celebration</a>
-    <a href="#" data-slide="5">Gift Registry</a>
-    <a href="#" data-slide="6">RSVP</a>
-  </nav>
+      <!-- Menu panel (shows the first 7 pages, as requested) -->
+      <nav class="menu" id="menu">
+        <button class="close btn" id="closeMenu">✕</button>
+        <a href="#" data-slide="0">Home</a>
+        <a href="#" data-slide="1">Names</a>
+        <a href="#" data-slide="2">Invitation</a>
+        <a href="#" data-slide="3">Wedding Ceremony</a>
+        <a href="#" data-slide="4">Wedding Celebration</a>
+        <a href="#" data-slide="5">Gift Registry</a>
+        <a href="#" data-slide="6">RSVP</a>
+      </nav>
 
-  <!-- Slider -->
-  <main class="slider" id="slider" role="region" aria-roledescription="carousel" aria-label="Wedding invitation">
-    <section class="slides" id="slides" aria-live="polite">
+      <!-- Slider -->
+      <main class="slider" id="slider" role="region" aria-roledescription="carousel" aria-label="Wedding invitation">
+        <section class="slides" id="slides" aria-live="polite">
 
-      <!-- 1. Home -->
-      <article class="slide" aria-label="Home">
-        <div class="chip">With love</div>
-        <h1 class="script lg" style="margin:14px 0 6px;">Joseph &amp; Anna‑Maria</h1>
-        <div class="title sm muted">are getting married</div>
-      </article>
+          <!-- 1. Home -->
+          <article class="slide" aria-label="Home">
+            <div class="chip">With love</div>
+            <h1 class="script lg" style="margin:14px 0 6px;">Joseph &amp; Anna‑Maria</h1>
+            <div class="title sm muted">are getting married</div>
+          </article>
 
-      <!-- 2. Names (alt) -->
-      <article class="slide" aria-label="Names">
-        <h2 class="script lg">Joseph</h2>
-        <h2 class="script lg" style="margin-top:-6px;">&amp;</h2>
-        <h2 class="script lg" style="margin-top:-6px;">Anna‑Maria</h2>
-        <div class="title sm muted" style="margin-top:10px;">are getting married</div>
-      </article>
+          <!-- 2. Names -->
+          <article class="slide" aria-label="Names">
+            <h2 class="script lg">Joseph</h2>
+            <h2 class="script lg" style="margin-top:-6px;">&amp;</h2>
+            <h2 class="script lg" style="margin-top:-6px;">Anna‑Maria</h2>
+            <div class="title sm muted" style="margin-top:10px;">are getting married</div>
+          </article>
 
-      <!-- 3. Verse & Families -->
-      <article class="slide" aria-label="Invitation">
-        <div class="title sm muted" style="margin-bottom:8px;">"This is my commandment: Love one another as I love you."<br/>— John 15:12</div>
-        <div class="title md" style="margin:12px 0 2px;">With joyous hearts,</div>
-        <div class="title md"><strong>Gemayel &amp; Elias families</strong></div>
-        <div class="title sm muted" style="margin-top:8px;">request your presence to attend the wedding of</div>
-        <div class="script lg" style="margin:14px 0 8px;">Joseph &amp; Anna‑Maria</div>
-        <div class="title sm">on December 6, 2025</div>
-        <div class="muted">at 6:30 pm</div>
-      </article>
+          <!-- 3. Verse & Invitation -->
+          <article class="slide" aria-label="Invitation">
+            <div class="title sm muted" style="margin-bottom:8px;">"This is my commandment: Love one another as I love you."<br/>— John 15:12</div>
+            <div class="title md" style="margin:12px 0 2px;">With joyous hearts,</div>
+            <div class="title md"><strong>Gemayel &amp; Elias families</strong></div>
+            <div class="title sm muted" style="margin-top:8px;">request your presence to attend the wedding of</div>
+            <div class="script lg" style="margin:14px 0 8px;">Joseph &amp; Anna‑Maria</div>
+            <div class="title sm">on December 6, 2025</div>
+            <div class="muted">at 6:30 pm</div>
+          </article>
 
-      <!-- 4. Wedding Ceremony -->
-      <article class="slide" aria-label="Wedding Ceremony">
-        <div class="script md" style="margin-bottom:8px;">Wedding Ceremony</div>
-        <div class="icon">⛪</div>
-        <div class="title sm"><strong>December 6, 2025</strong></div>
-        <div class="title sm" style="margin-top:2px;">6:30 pm</div>
-        <div class="icon" style="margin-top:10px;">📍</div>
-        <div class="title md"><strong>كنيسة مار فوقا غدير</strong></div>
-        <div class="muted">Ghadir</div>
-        <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location Map</a>
-      </article>
+          <!-- 4. Wedding Ceremony -->
+          <article class="slide" aria-label="Wedding Ceremony">
+            <div class="script md" style="margin-bottom:8px;">Wedding Ceremony</div>
+            <div class="icon">⛪</div>
+            <div class="title sm"><strong>December 6, 2025</strong></div>
+            <div class="title sm" style="margin-top:2px;">6:30 pm</div>
+            <div class="icon" style="margin-top:10px;">📍</div>
+            <div class="title md"><strong>كنيسة مار فوقا غدير</strong></div>
+            <div class="muted">Ghadir</div>
+            <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location Map</a>
+          </article>
 
-      <!-- 5. Wedding Celebration / Reception -->
-      <article class="slide" aria-label="Wedding Celebration">
-        <div class="script md" style="margin-bottom:8px;">Wedding Celebration</div>
-        <div class="icon">🥂</div>
-        <div class="title sm"><strong>December 6, 2025</strong></div>
-        <div class="title sm" style="margin-top:2px;">9:00 pm</div>
-        <div class="icon" style="margin-top:10px;">📍</div>
-        <div class="title md"><strong>نادي الضباط جونية</strong></div>
-        <div class="muted">Jounieh, Lebanon</div>
-        <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5">Location Map</a>
-      </article>
+          <!-- 5. Wedding Celebration -->
+          <article class="slide" aria-label="Wedding Celebration">
+            <div class="script md" style="margin-bottom:8px;">Wedding Celebration</div>
+            <div class="icon">🥂</div>
+            <div class="title sm"><strong>December 6, 2025</strong></div>
+            <div class="title sm" style="margin-top:2px;">9:00 pm</div>
+            <div class="icon" style="margin-top:10px;">📍</div>
+            <div class="title md"><strong>نادي الضباط جونية</strong></div>
+            <div class="muted">Jounieh, Lebanon</div>
+            <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5">Location Map</a>
+          </article>
 
-      <!-- 6. Gift Registry -->
-      <article class="slide" aria-label="Gift Registry">
-        <div class="script md" style="margin-bottom:8px;">Gift Registry</div>
-        <div class="title sm" style="max-width:86%;">Your presence is the only gift we truly need. But if you wish to bless us further, our wedding registry can be found at:</div>
-        <div class="title md" style="margin-top:12px;"><strong>Whish Money, All Branches</strong></div>
-        <div class="title sm">Account ID: __________</div>
-      </article>
+          <!-- 6. Gift Registry -->
+          <article class="slide" aria-label="Gift Registry">
+            <div class="script md" style="margin-bottom:8px;">Gift Registry</div>
+            <div class="title sm" style="max-width:86%;">Your presence is the only gift we truly need. But if you wish to bless us further, our wedding registry can be found at:</div>
+            <div class="title md" style="margin-top:12px;"><strong>Whish Money, All Branches</strong></div>
+            <div class="title sm">Account ID: __________</div>
+          </article>
 
-      <!-- 7. RSVP -->
-      <article class="slide" aria-label="RSVP">
-        <div class="title sm" style="margin-bottom:8px;">Kindly reply by <strong>Nov 25</strong></div>
-        <div class="title sm muted" style="margin-bottom:12px;">Number of Invitees: <strong>2</strong></div>
+          <!-- 7. RSVP -->
+          <article class="slide" aria-label="RSVP">
+            <div class="title sm" style="margin-bottom:8px;">Kindly reply by <strong>Nov 25</strong></div>
+            <div class="title sm muted" style="margin-bottom:12px;">Number of Invitees: <strong>2</strong></div>
 
-        <div class="toggle" role="tablist" aria-label="Attendance">
-          <button type="button" class="toggle-btn active" data-value="Attending">Attending</button>
-          <button type="button" class="toggle-btn" data-value="Not Attending">Not Attending</button>
-        </div>
+            <div class="toggle" role="tablist" aria-label="Attendance">
+              <button type="button" class="toggle-btn active" data-value="Attending">Attending</button>
+              <button type="button" class="toggle-btn" data-value="Not Attending">Not Attending</button>
+            </div>
 
-        <form id="rsvp" action="https://formspree.io/f/mblzazgw" method="POST" novalidate>
-          <input type="hidden" name="invite" value="Joseph & Anna‑Maria — 6 Dec 2025" />
-          <input type="hidden" name="attending" id="attending" value="Attending" />
+            <form id="rsvp" action="https://formspree.io/f/mblzazgw" method="POST" novalidate>
+              <input type="hidden" name="invite" value="Joseph & Anna‑Maria — 6 Dec 2025" />
+              <input type="hidden" name="attending" id="attending" value="Attending" />
 
-          <label>Number of Guests Attending
-            <select name="guests" id="guests">
-              <option value="1">1</option>
-              <option value="2" selected>2</option>
-            </select>
-          </label>
+              <label>Number of Guests Attending
+                <select name="guests" id="guests">
+                  <option value="1">1</option>
+                  <option value="2" selected>2</option>
+                </select>
+              </label>
 
-          <label>Guest #1<input name="guest1" id="guest1" placeholder="Full name" required /></label>
-          <label id="guest2-wrap">Guest #2<input name="guest2" id="guest2" placeholder="Full name" required /></label>
-          <label>Phone Number<input name="phone" inputmode="tel" placeholder="+961 …" /></label>
-          <button class="btn" type="submit">Press To Confirm</button>
-        </form>
-        <div id="thanks" class="card" style="display:none;margin-top:10px;">Thank you! Your RSVP has been received.</div>
-      </article>
+              <label>Guest #1<input name="guest1" id="guest1" placeholder="Full name" required /></label>
+              <label id="guest2-wrap">Guest #2<input name="guest2" id="guest2" placeholder="Full name" required /></label>
+              <label>Phone Number<input name="phone" inputmode="tel" placeholder="+961 …" /></label>
+              <button class="btn" type="submit">Press To Confirm</button>
+            </form>
+            <div id="thanks" class="card" style="display:none;margin-top:10px;">Thank you! Your RSVP has been received.</div>
+          </article>
 
-      <!-- 8. Final Photo / Polaroid -->
-      <article class="slide" aria-label="Final">
-        <div class="polaroid">
-          <img src="images/card.jpg" alt="Together forever"/>
-          <div class="cap">♡Together forever♡</div>
-        </div>
-        <div class="title sm" style="position:absolute;bottom:70px;left:0;right:0;opacity:.9;">Made by InviteMe</div>
-      </article>
+          <!-- 8. Final Photo / Polaroid (not in the menu, swipe-only) -->
+          <article class="slide" aria-label="Final">
+            <div class="polaroid">
+              <img src="images/photo_2025-10-09_11-19-49.jpg" alt="Together forever"/>
+              <div class="cap">♡Together forever♡</div>
+            </div>
+            <div class="title sm" style="position:absolute;bottom:70px;left:0;right:0;opacity:.9;">Made by InviteMe</div>
+          </article>
 
-    </section>
+        </section>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <div class="hint">Swipe Left</div>
+      </main>
+    </div>
+  </div>
 
-    <div class="dots" id="dots" aria-hidden="true"></div>
-    <div class="hint">Swipe Left</div>
-  </main>
-
-  <!-- Background music (autoplay attempt; toggle via button) -->
+  <!-- Background music -->
   <audio id="bgm" src="invite-music.mp3" preload="auto" loop autoplay playsinline></audio>
 
   <script>
-    // ===== Config you can change easily =====
-    const WEDDING_ISO = '2025-12-06T18:30:00+02:00'; // Asia/Beirut
-    const BG_IMAGES = ['images/bg1.jpg','images/bg2.jpg','images/bg3.jpg'];
-
-    // ===== Background slideshow =====
+    // ===== Background slideshow (2 photos, 5s each) =====
     const bgImgs = Array.from(document.querySelectorAll('.bg img'));
     let bgIndex = 0; setInterval(()=>{bgImgs[bgIndex].classList.remove('active');bgIndex=(bgIndex+1)%bgImgs.length;bgImgs[bgIndex].classList.add('active');},5000);
 
-    // ===== Slider logic =====
+    // ===== Slider logic (mobile-first) =====
     const slidesEl = document.getElementById('slides');
     const slides = Array.from(slidesEl.querySelectorAll('.slide'));
+    slidesEl.style.width = `${slides.length * 100}vw`; // each page shows separately
     const dotsEl = document.getElementById('dots');
     let index = 0, startX=0, curX=0, dragging=false;
 
@@ -248,13 +250,13 @@
     slider.addEventListener('touchstart',e=>{dragging=true;startX=e.touches[0].clientX;curX=startX;},{passive:true});
     slider.addEventListener('touchmove',e=>{if(!dragging) return; curX=e.touches[0].clientX;},{passive:true});
     slider.addEventListener('touchend',()=>{ if(!dragging) return; dragging=false; const dx=curX-startX; if(dx<-40 && index<slides.length-1) index++; else if(dx>40 && index>0) index--; updateSlider();});
-    window.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'&&index>0){index--;updateSlider();} if(e.key==='ArrowRight'&&index<slides.length-1){index++;updateSlider();}});
 
-    // ===== Menu =====
-    const root = document.body; const menu = document.getElementById('menu');
-    document.getElementById('menuBtn').addEventListener('click',()=>root.classList.add('menu-open'));
-    document.getElementById('closeMenu').addEventListener('click',()=>root.classList.remove('menu-open'));
-    menu.querySelectorAll('a[data-slide]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault(); index=Number(a.dataset.slide)||0; updateSlider(); root.classList.remove('menu-open');}));
+    // ===== Menu (shows 7 titles; navigates to slides 0..6) =====
+    const phone = document.getElementById('phone');
+    const menu = document.getElementById('menu');
+    document.getElementById('menuBtn').addEventListener('click',()=>phone.classList.add('menu-open'));
+    document.getElementById('closeMenu').addEventListener('click',()=>phone.classList.remove('menu-open'));
+    menu.querySelectorAll('a[data-slide]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault(); index=Number(a.dataset.slide)||0; updateSlider(); phone.classList.remove('menu-open');}));
 
     // ===== Music toggle =====
     const audio = document.getElementById('bgm');
@@ -274,9 +276,6 @@
     function syncGuestsUI(){ const attending = attendingHidden?.value||'Attending'; const two = guestsSel?.value==='2'; if(attending==='Not Attending'){ guestsSel.disabled=true; guest2Wrap.style.display='none'; guest1.required=false; guest2.required=false; } else { guestsSel.disabled=false; guest2Wrap.style.display=two?'block':'none'; guest1.required=true; guest2.required=two; } }
     document.querySelectorAll('.toggle-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); attendingHidden.value = btn.dataset.value; syncGuestsUI();}));
     guestsSel?.addEventListener('change',syncGuestsUI); syncGuestsUI();
-
-    // ===== Countdown (if you want it visible, add the elements to a slide) =====
-    // You can insert a countdown anywhere using WEDDING_ISO; left here for extensibility.
   </script>
 </body>
 </html>
