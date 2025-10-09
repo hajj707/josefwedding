@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Joseph & Anna-Maria — Wedding Invitation (Mobile)</title>
-  <meta name="description" content="Mobile swipe wedding invitation with menu, music, maps, and RSVP (Formspree)." />
+  <meta name="description" content="Mobile swipe wedding invitation with background slideshow, music, menu, maps, and RSVP (Formspree)." />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,6 +45,17 @@
     /* Music toggle */
     .music{position:absolute;left:10px;bottom:10px;z-index:20;width:36px;height:36px;border-radius:8px;background:var(--panel);display:grid;place-items:center;border:1px solid var(--border);font-size:18px}
 
+    /* Mini iOS unlock pill */
+    .snack {
+      position: fixed; left: 50%; transform: translateX(-50%);
+      bottom: 70px; z-index: 50;
+      background: rgba(0,0,0,.78); color: #fff;
+      padding: 10px 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.6);
+      font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    }
+    .snack.hidden { display: none; }
+
     /* Swipe hint */
     .hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:13px;opacity:.9;z-index:5}
 
@@ -52,12 +63,12 @@
     .slider{position:relative;height:100%;width:100%;touch-action:pan-y;overflow:hidden}
     .slides{
       display:flex;height:100%;
-      width:calc(var(--count) * 100%);           /* container = sum of all slides */
-      transition:transform .45s ease;
+      width:calc(var(--count) * 100%); /* container = sum of all slides */
+      transition:transform .45s ease; will-change: transform;
     }
     .slide{
       position:relative;
-      flex:0 0 calc(100% / var(--count));        /* each slide = 1/var(--count) */
+      flex:0 0 calc(100% / var(--count)); /* each slide = 1/var(--count) */
       width:calc(100% / var(--count));
       height:100%;
       padding:24px 18px env(safe-area-inset-bottom);
@@ -71,9 +82,7 @@
     .md{font-size:28px}
     .sm{font-size:18px}
     .muted{color:var(--muted)}
-
-    /* readable on bright photos */
-    .script,.title{ text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 2px 12px rgba(0,0,0,.55); }
+    .script,.title{ text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 2px 12px rgba(0,0,0,.55); } /* readability */
 
     .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border-radius:999px;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
     .card{background:var(--panel);border-radius:18px;padding:16px 14px;box-shadow:0 6px 20px rgba(0,0,0,.2);backdrop-filter:saturate(110%) blur(2px)}
@@ -124,6 +133,8 @@
       <div class="topbar"><button id="menuBtn" class="hamburger" aria-label="Open menu"><span></span></button></div>
       <!-- Music toggle -->
       <button id="musicBtn" class="music" aria-label="Toggle music">♪</button>
+      <!-- Tiny iOS unlock pill (only shows if needed) -->
+      <button id="unlockAudio" class="snack hidden">🔊 Tap to enable sound</button>
 
       <!-- Menu (first 7 pages) -->
       <nav class="menu" id="menu">
@@ -173,7 +184,7 @@
             <div class="title sm"><strong>December 6, 2025</strong></div>
             <div class="title sm" style="margin-top:2px;">6:30 pm</div>
             <div class="icon" style="margin-top:10px;">📍</div>
-            <div class="title md"><strong>كنيسة مار فوقا غدير</strong></div>
+            <div class="title md"><strong>St Phocas Parish-كنيسة مار فوقا غدير</strong></div>
             <div class="muted">Ghadir</div>
             <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location Map</a>
           </article>
@@ -185,7 +196,7 @@
             <div class="title sm"><strong>December 6, 2025</strong></div>
             <div class="title sm" style="margin-top:2px;">9:00 pm</div>
             <div class="icon" style="margin-top:10px;">📍</div>
-            <div class="title md"><strong>نادي الضباط جونية</strong></div>
+            <div class="title md"><strong>Officer club Jounieh-نادي الضباط جونية</strong></div>
             <div class="muted">Jounieh, Lebanon</div>
             <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5">Location Map</a>
           </article>
@@ -211,12 +222,14 @@
             <form id="rsvp" action="https://formspree.io/f/mblzazgw" method="POST" novalidate>
               <input type="hidden" name="invite" value="Joseph & Anna-Maria — 6 Dec 2025" />
               <input type="hidden" name="attending" id="attending" value="Attending" />
+
               <label>Number of Guests Attending
                 <select name="guests" id="guests">
                   <option value="1">1</option>
                   <option value="2" selected>2</option>
                 </select>
               </label>
+
               <label>Guest #1<input name="guest1" id="guest1" placeholder="Full name" required /></label>
               <label id="guest2-wrap">Guest #2<input name="guest2" id="guest2" placeholder="Full name" required /></label>
               <label>Phone Number<input name="phone" inputmode="tel" placeholder="+961 …" /></label>
@@ -244,7 +257,7 @@
   <audio id="bgm" src="invite-music.mp3" preload="auto" loop autoplay playsinline></audio>
 
   <script>
-  // ===== Background slideshow (2 photos, 5s each) =====
+  /* ===== Background slideshow (2 photos, 5s each) ===== */
   var bgImgs = Array.prototype.slice.call(document.querySelectorAll('.bg img'));
   var bgIndex = 0;
   setInterval(function(){
@@ -254,14 +267,15 @@
     if (bgImgs[bgIndex]) bgImgs[bgIndex].classList.add('active');
   }, 5000);
 
-  // ===== Slider logic (mobile) =====
+  /* ===== Slider logic (mobile) ===== */
   var slidesEl = document.getElementById('slides');
   var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
-  // keep CSS variable in sync (safety if you add/remove slides)
+  // keep CSS var in sync with actual count
   document.documentElement.style.setProperty('--count', String(slides.length));
+
   var dotsEl = document.getElementById('dots');
   var index = 0, startX=0, curX=0, dragging=false;
-  var step = 100 / slides.length; // percentage to move per slide
+  var step = 100 / slides.length; // percent to move per slide
 
   function renderDots(){
     dotsEl.innerHTML = '';
@@ -283,7 +297,7 @@
   slider.addEventListener('touchmove', function(e){ if(!dragging) return; curX=e.touches[0].clientX; }, {passive:true});
   slider.addEventListener('touchend', function(){ if(!dragging) return; dragging=false; var dx=curX-startX; if(dx<-40 && index<slides.length-1) index++; else if(dx>40 && index>0) index--; updateSlider(); });
 
-  // ===== Menu (7 items -> slides 0..6) =====
+  /* ===== Menu (7 items -> slides 0..6) ===== */
   var phone = document.getElementById('phone');
   var menu = document.getElementById('menu');
   document.getElementById('menuBtn').addEventListener('click', function(){ phone.classList.add('menu-open'); });
@@ -298,29 +312,64 @@
     });
   }
 
-  // ===== Music autoplay + toggle (no tap overlay) =====
+  /* ===== Music autoplay + minimal iOS unlock ===== */
   var audio = document.getElementById('bgm');
   var musicBtn = document.getElementById('musicBtn');
+  var unlockBtn = document.getElementById('unlockAudio');
   var autoKick = null;
-  function tryPlay(){
-    if (!audio) return;
-    var p = audio.play();
-    if (p && typeof p.then === 'function'){
-      p.then(function(){ if (autoKick){ clearInterval(autoKick); autoKick = null; } refreshMusicIcon(); })
-       .catch(function(){ /* iOS may block audible autoplay until first interaction */ });
-    }
+
+  function isiOS() {
+    var ua = navigator.userAgent || navigator.vendor || window.opera;
+    return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   }
   function refreshMusicIcon(){ musicBtn.textContent = (audio && !audio.paused) ? '♪' : '♫'; }
-  window.addEventListener('load', tryPlay);
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden) tryPlay(); });
-  autoKick = setInterval(tryPlay, 2000); // nudge a few times
-  tryPlay();
-  musicBtn.addEventListener('click', function(){ if(audio.paused){ audio.play(); } else { audio.pause(); } refreshMusicIcon(); });
+  function tryPlayOnce() {
+    if (!audio) return Promise.reject();
+    var p = audio.play();
+    if (p && typeof p.then === 'function') return p;
+    return Promise.resolve();
+  }
+  function attemptAutoplay() {
+    tryPlayOnce()
+    .then(function () {
+      unlockBtn && unlockBtn.classList.add('hidden');
+      if (autoKick){ clearInterval(autoKick); autoKick = null; }
+      refreshMusicIcon();
+    })
+    .catch(function () {
+      if (isiOS()) unlockBtn && unlockBtn.classList.remove('hidden');
+      refreshMusicIcon();
+    });
+  }
+  window.addEventListener('load', attemptAutoplay);
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) attemptAutoplay(); });
+  autoKick = setInterval(attemptAutoplay, 2000);
+  attemptAutoplay();
+
+  function userUnlock() {
+    tryPlayOnce().finally(function(){
+      unlockBtn && unlockBtn.classList.add('hidden');
+      refreshMusicIcon();
+      window.removeEventListener('pointerdown', userUnlock, {passive:true});
+      window.removeEventListener('keydown', userUnlock, {passive:true});
+      window.removeEventListener('touchstart', userUnlock, {passive:true});
+    });
+  }
+  window.addEventListener('pointerdown', userUnlock, {passive:true});
+  window.addEventListener('keydown', userUnlock, {passive:true});
+  window.addEventListener('touchstart', userUnlock, {passive:true});
+  unlockBtn && unlockBtn.addEventListener('click', userUnlock);
+
+  // manual toggle
+  musicBtn.addEventListener('click', function(){
+    if(audio.paused){ audio.play(); } else { audio.pause(); }
+    refreshMusicIcon();
+  });
   audio.addEventListener('play', refreshMusicIcon);
   audio.addEventListener('pause', refreshMusicIcon);
   refreshMusicIcon();
 
-  // ===== RSVP toggle logic (no optional chaining) =====
+  /* ===== RSVP toggle logic ===== */
   var attendingHidden = document.getElementById('attending');
   var guestsSel = document.getElementById('guests');
   var guest2Wrap = document.getElementById('guest2-wrap');
