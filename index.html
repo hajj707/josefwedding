@@ -4,351 +4,279 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Joseph & Anna‑Maria — Wedding Invitation</title>
-  <meta name="description" content="Wedding invitation for Joseph Gemayel & Anna‑Maria Elias — mobile swipe experience with music, countdown, and RSVP." />
+  <meta name="description" content="Mobile swipe wedding invitation with music, countdown, menu, maps, RSVP (Formspree)." />
 
-  <!-- Optional: fonts similar to the reference (adjust if you know the exact font) -->
+  <!-- Fonts to imitate the reference style: script for headings, serif for titles, sans for body -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --accent:#ffffff;
       --muted: rgba(255,255,255,.78);
-      --bg-dark: rgba(0,0,0,.36);
-      --bg-darker: rgba(0,0,0,.48);
+      --panel: rgba(0,0,0,.55);
+      --panel2: rgba(0,0,0,.40);
+      --border: rgba(255,255,255,.75);
+      --ghost: rgba(0,0,0,.28);
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
-    body{
-      font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji','Segoe UI Emoji', sans-serif;
-      color:#fff; background:#000; overflow:hidden;
-    }
+    body{font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji',sans-serif;color:#fff;background:#000;overflow:hidden}
 
-    /* Background slideshow */
-    .bg{
-      position:fixed; inset:0; z-index:-1; overflow:hidden;
-    }
-    .bg img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .8s ease-in-out; filter:contrast(1.05) saturate(1.05); }
-    .bg img.active{ opacity:1; }
-    .bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.45)); }
+    /* Background */
+    .bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
+    .bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
+    .bg img.active{opacity:1}
+    .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.45))}
 
-    /* Swipe container */
-    .slider{ position:relative; height:100dvh; width:100vw; touch-action:pan-y; }
-    .slides{ display:flex; height:100%; width:700vw; transition:transform .45s ease; }
-    .slide{ position:relative; width:100vw; height:100%; padding:24px 18px env(safe-area-inset-bottom); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+    /* Top bar */
+    .topbar{position:fixed;left:10px;top:10px;z-index:20}
+    .hamburger{width:36px;height:36px;border-radius:8px;background:var(--panel);display:grid;place-items:center;border:1px solid var(--border)}
+    .hamburger span{display:block;width:18px;height:2px;background:#fff;box-shadow:0 6px 0 #fff,0 -6px 0 #fff}
 
-    /* Top titles (display font) */
-    .title{ font-family:'Playfair Display', Georgia, serif; letter-spacing:.5px; }
-    .title.lg{ font-weight:700; font-size:44px; line-height:1.08; }
-    .title.md{ font-weight:600; font-size:28px; }
-    .title.sm{ font-weight:600; font-size:20px; }
+    /* Music toggle */
+    .music{position:fixed;left:10px;bottom:10px;z-index:20;width:36px;height:36px;border-radius:8px;background:var(--panel);display:grid;place-items:center;border:1px solid var(--border);font-size:18px}
 
-    .muted{ color:var(--muted); }
-    .chip{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; background:var(--bg-dark); border-radius:999px; font-size:12px; letter-spacing:.4px; text-transform:uppercase; }
-    .card{ background:var(--bg-darker); border-radius:18px; padding:16px 14px; box-shadow:0 6px 20px rgba(0,0,0,.2); }
-    .grid{ display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+    /* Swipe hint */
+    .hint{position:fixed;left:0;right:0;bottom:18px;text-align:center;font-size:13px;opacity:.9;z-index:5}
 
-    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 16px; border-radius:12px; background:#ffffff; color:#000; font-weight:600; text-decoration:none; }
-    .btn.ghost{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.5); }
+    /* Slider */
+    .slider{position:relative;height:100dvh;width:100vw;touch-action:pan-y}
+    .slides{display:flex;height:100%}
+    .slide{position:relative;width:100vw;height:100%;padding:24px 18px env(safe-area-inset-bottom);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
 
-    .footer{ position:absolute; left:0; right:0; bottom:16px; font-size:12px; opacity:.8; text-align:center; }
+    /* Typography */
+    .script{font-family:'Great Vibes',cursive;letter-spacing:.4px}
+    .title{font-family:'Playfair Display',Georgia,serif}
+    .lg{font-size:44px;line-height:1.08}
+    .md{font-size:28px}
+    .sm{font-size:18px}
+    .muted{color:var(--muted)}
 
-    /* Dots (7 slides) */
-    .dots{ position:absolute; left:0; right:0; bottom:12px; display:flex; justify-content:center; gap:6px; }
-    .dot{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.35);} 
-    .dot.active{ background:#fff; }
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border-radius:999px;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
+    .card{background:var(--panel);border-radius:18px;padding:16px 14px;box-shadow:0 6px 20px rgba(0,0,0,.2);backdrop-filter:saturate(110%) blur(2px)}
 
-    /* Countdown */
-    .countdown{ display:flex; gap:6px; justify-content:center; margin-top:14px; }
-    .count{ min-width:64px; padding:10px 8px; border-radius:12px; background:var(--bg-dark); }
-    .count h3{ margin:0; font-family:'Playfair Display', Georgia, serif; font-size:22px; }
-    .count p{ margin:2px 0 0; font-size:11px; letter-spacing:.35px; text-transform:uppercase; opacity:.8; }
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;background:transparent;border:1px solid var(--border);color:#fff;font-weight:600;text-decoration:none}
+
+    .dots{position:fixed;left:0;right:0;bottom:48px;display:flex;justify-content:center;gap:6px;z-index:5}
+    .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}
+    .dot.active{background:#fff}
+
+    /* Icons */
+    .icon{font-size:22px;margin-bottom:8px;opacity:.95}
+
+    /* Grid for detail cards */
+    .grid{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+
+    /* Menu panel */
+    .menu{position:fixed;inset:8px;z-index:40;background:rgba(0,0,0,.82);border:2px solid var(--border);border-radius:16px;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    .menu a{display:block;font-family:'Playfair Display',serif;font-size:24px;margin:12px 0;color:#fff;text-decoration:none}
+    .menu .close{position:absolute;left:12px;top:12px;font-size:22px}
+    .menu-open .menu{display:flex}
+
+    /* Polaroid card */
+    .polaroid{background:#f6f6f6;color:#111;border-radius:12px;padding:10px 10px 16px;width:min(280px,82vw);transform:rotate(-6deg);box-shadow:0 10px 26px rgba(0,0,0,.35)}
+    .polaroid img{display:block;width:100%;height:360px;object-fit:cover;border-radius:8px}
+    .polaroid .cap{text-align:center;margin-top:8px;font-family:'Playfair Display',serif}
 
     /* Form */
-    form{ display:grid; gap:10px; width:min(520px, 100%); margin:0 auto; text-align:left; }
-    label{ font-size:12px; opacity:.9; }
-    input, select, textarea{ width:100%; padding:12px 13px; border-radius:12px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.06); color:#fff; font-size:16px; }
-    textarea{ min-height:104px; resize:vertical; }
+    form{display:grid;gap:10px;width:min(520px, 92%);margin:0 auto;text-align:left}
+    label{font-size:12px;opacity:.95}
+    input,select,textarea{width:100%;padding:12px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;font-size:16px}
+    textarea{min-height:104px;resize:vertical}
 
-    /* Start overlay (tap to start like the reference) */
-    .start-overlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; background:rgba(0,0,0,.82); z-index:50; text-align:center; }
-    .pulse{ width:64px; height:64px; border-radius:999px; background:rgba(255,255,255,.1); display:grid; place-items:center; animation:pulse 1.8s infinite; }
-    @keyframes pulse{ 0%{transform:scale(.96);} 50%{transform:scale(1);} 100%{transform:scale(.96);} }
+    .toggle{display:flex;gap:8px;margin:10px auto 12px;width:min(520px,92%)}
+    .toggle-btn{flex:1;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55);background:transparent;color:#fff;font-weight:600}
+    .toggle-btn.active{background:rgba(76,175,80,.95);color:#000;border-color:transparent}
 
-    /* Icons (simple text placeholders to keep it from external assets) */
-    .icon{ font-size:20px; margin-right:6px; }
-
-    /* Safe spacing on very small devices */
-    @media (max-width:360px){
-      .title.lg{ font-size:38px; }
-      .title.md{ font-size:24px; }
-    }
+    @media (max-width:360px){.lg{font-size:38px}.md{font-size:24px}}
   </style>
 </head>
 <body>
-  <!-- Background slideshow images (replace with your images under /images) -->
+  <!-- Background slideshow (replace with your images) -->
   <div class="bg" aria-hidden="true">
-    <img src="images/bg1.jpg" alt="" class="active" />
-    <img src="images/bg2.jpg" alt="" />
-    <img src="images/bg3.jpg" alt="" />
-    <img src="images/bg4.jpg" alt="" />
+    <img src="images/bg1.jpg" class="active" alt=""/>
+    <img src="images/bg2.jpg" alt=""/>
+    <img src="images/bg3.jpg" alt=""/>
   </div>
 
-  <!-- Background music -->
-  <audio id="bgm" src="invite-music.mp3" preload="auto" loop autoplay playsinline></audio>
+  <!-- Top-left hamburger -->
+  <div class="topbar"><button id="menuBtn" class="hamburger" aria-label="Open menu"><span></span></button></div>
+  <!-- Bottom-left music toggle -->
+  <button id="musicBtn" class="music" aria-label="Toggle music">♪</button>
 
-  
-    <div class="title md">Tap to start</div>
-    <div class="muted" style="font-size:12px;">Swipe left for the next section</div>
-  </div>
+  <!-- Menu panel -->
+  <nav class="menu" id="menu">
+    <button class="close btn" id="closeMenu">✕</button>
+    <a href="#" data-slide="0">Home</a>
+    <a href="#" data-slide="2">Invitation</a>
+    <a href="#" data-slide="3">Wedding Ceremony</a>
+    <a href="#" data-slide="4">Wedding Celebration</a>
+    <a href="#" data-slide="5">Gift Registry</a>
+    <a href="#" data-slide="6">RSVP</a>
+  </nav>
 
-  <!-- Slider with exactly 7 slides, mimicking the reference structure -->
+  <!-- Slider -->
   <main class="slider" id="slider" role="region" aria-roledescription="carousel" aria-label="Wedding invitation">
     <section class="slides" id="slides" aria-live="polite">
 
-      <!-- 1. Intro screen -->
-      <article class="slide" aria-label="Intro">
+      <!-- 1. Home -->
+      <article class="slide" aria-label="Home">
         <div class="chip">With love</div>
-        <h1 class="title lg" style="margin:10px 0 6px;">Joseph <span class="muted">&</span> Anna‑Maria</h1>
+        <h1 class="script lg" style="margin:14px 0 6px;">Joseph &amp; Anna‑Maria</h1>
         <div class="title sm muted">are getting married</div>
-        <div class="countdown" id="countdown">
-          <div class="count"><h3 id="cd-days">0</h3><p>Days</p></div>
-          <div class="count"><h3 id="cd-hours">0</h3><p>Hours</p></div>
-          <div class="count"><h3 id="cd-mins">0</h3><p>Minutes</p></div>
-          <div class="count"><h3 id="cd-secs">0</h3><p>Seconds</p></div>
-        </div>
       </article>
 
-      <!-- 2. Verse / quote (optional like the reference) -->
-      <article class="slide" aria-label="Verse">
-        <div class="card">
-          <div class="title md">"This is my commandment: Love one another as I love you."</div>
-          <div class="muted" style="margin-top:8px;">— John 15:12</div>
-        </div>
+      <!-- 2. Names (alt) -->
+      <article class="slide" aria-label="Names">
+        <h2 class="script lg">Joseph</h2>
+        <h2 class="script lg" style="margin-top:-6px;">&amp;</h2>
+        <h2 class="script lg" style="margin-top:-6px;">Anna‑Maria</h2>
+        <div class="title sm muted" style="margin-top:10px;">are getting married</div>
       </article>
 
-      <!-- 3. Families & invitation text -->
+      <!-- 3. Verse & Families -->
       <article class="slide" aria-label="Invitation">
-        <div class="muted">With joyous hearts, the families</div>
-        <h2 class="title md" style="margin:6px 0 2px;">Gemayel & Elias</h2>
-        <div class="muted">request your presence to attend the wedding of</div>
-        <h3 class="title lg" style="margin:14px 0 6px;">Joseph & Anna‑Maria</h3>
+        <div class="title sm muted" style="margin-bottom:8px;">"This is my commandment: Love one another as I love you."<br/>— John 15:12</div>
+        <div class="title md" style="margin:12px 0 2px;">With joyous hearts,</div>
+        <div class="title md"><strong>Gemayel &amp; Elias families</strong></div>
+        <div class="title sm muted" style="margin-top:8px;">request your presence to attend the wedding of</div>
+        <div class="script lg" style="margin:14px 0 8px;">Joseph &amp; Anna‑Maria</div>
         <div class="title sm">on December 6, 2025</div>
-        <div class="muted">at 18:30</div>
+        <div class="muted">at 6:30 pm</div>
       </article>
 
-      <!-- 4. Ceremony details -->
-      <article class="slide" aria-label="Ceremony details">
-        <h3 class="title md" style="margin-bottom:10px;">Wedding Ceremony</h3>
-        <div class="card" style="width:min(520px,92%); text-align:left;">
-          <div class="grid">
-            <div>
-              <div><span class="icon">📅</span><strong>Friday</strong></div>
-              <div class="muted">December 6, 2025</div>
-            </div>
-            <div>
-              <div><span class="icon">⏰</span><strong>18:30</strong></div>
-              <div class="muted">Beirut time</div>
-            </div>
-            <div style="grid-column:1/-1; margin-top:6px;">
-              <div><span class="icon">📍</span><strong>كنيسة مار فوقا غدير</strong></div>
-              <div class="muted">Ghadir</div>
-            </div>
-          </div>
-          <div style="margin-top:12px; display:flex; gap:10px;">
-            <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Open Map</a>
-            <a class="btn ghost" href="#" onclick="copyToClipboard('https://maps.app.goo.gl/maT4gYYdBWh6UuLH7'); return false;">Copy Link</a>
-          </div>
-        </div>
+      <!-- 4. Wedding Ceremony -->
+      <article class="slide" aria-label="Wedding Ceremony">
+        <div class="script md" style="margin-bottom:8px;">Wedding Ceremony</div>
+        <div class="icon">⛪</div>
+        <div class="title sm"><strong>December 6, 2025</strong></div>
+        <div class="title sm" style="margin-top:2px;">6:30 pm</div>
+        <div class="icon" style="margin-top:10px;">📍</div>
+        <div class="title md"><strong>كنيسة مار فوقا غدير</strong></div>
+        <div class="muted">Ghadir</div>
+        <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location Map</a>
       </article>
 
-      <!-- 5. Sword Ceremony (شبك السيوف) -->
-      <article class="slide" aria-label="Sword ceremony">
-        <h3 class="title md" style="margin-bottom:10px;">شبك السيوف</h3>
-        <div class="card" style="width:min(520px,92%); text-align:left;">
-          <div class="grid">
-            <div>
-              <div><span class="icon">📅</span><strong>Friday</strong></div>
-              <div class="muted">December 6, 2025</div>
-            </div>
-            <div>
-              <div><span class="icon">⏰</span><strong>19:30</strong></div>
-              <div class="muted">After Ceremony</div>
-            </div>
-          </div>
-        </div>
+      <!-- 5. Wedding Celebration / Reception -->
+      <article class="slide" aria-label="Wedding Celebration">
+        <div class="script md" style="margin-bottom:8px;">Wedding Celebration</div>
+        <div class="icon">🥂</div>
+        <div class="title sm"><strong>December 6, 2025</strong></div>
+        <div class="title sm" style="margin-top:2px;">9:00 pm</div>
+        <div class="icon" style="margin-top:10px;">📍</div>
+        <div class="title md"><strong>نادي الضباط جونية</strong></div>
+        <div class="muted">Jounieh, Lebanon</div>
+        <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5">Location Map</a>
       </article>
 
-      <!-- 6. Wedding Party / Reception -->
-      <article class="slide" aria-label="Reception details">
-        <h3 class="title md" style="margin-bottom:10px;">Wedding Party</h3>
-        <div class="card" style="width:min(520px,92%); text-align:left;">
-          <div class="grid">
-            <div>
-              <div><span class="icon">📅</span><strong>Friday</strong></div>
-              <div class="muted">December 6, 2025</div>
-            </div>
-            <div>
-              <div><span class="icon">⏰</span><strong>21:00</strong></div>
-              <div class="muted">Reception begins</div>
-            </div>
-            <div style="grid-column:1/-1; margin-top:6px;">
-              <div><span class="icon">📍</span><strong>نادي الضباط جونية</strong></div>
-              <div class="muted">Jounieh, Lebanon</div>
-            </div>
-          </div>
-          <div style="margin-top:12px; display:flex; gap:10px;">
-            <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5">Open Map</a>
-            <a class="btn ghost" href="#" onclick="copyToClipboard('https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5'); return false;">Copy Link</a>
-          </div>
-        </div>
+      <!-- 6. Gift Registry -->
+      <article class="slide" aria-label="Gift Registry">
+        <div class="script md" style="margin-bottom:8px;">Gift Registry</div>
+        <div class="title sm" style="max-width:86%;">Your presence is the only gift we truly need. But if you wish to bless us further, our wedding registry can be found at:</div>
+        <div class="title md" style="margin-top:12px;"><strong>Whish Money, All Branches</strong></div>
+        <div class="title sm">Account ID: __________</div>
       </article>
 
-      <!-- 7. RSVP form (Formspree) -->
+      <!-- 7. RSVP -->
       <article class="slide" aria-label="RSVP">
-        <h3 class="title md" style="margin-bottom:6px;">RSVP</h3>
-        <div class="muted" style="margin-bottom:12px;">Kindly reply as soon as possible — Number of invitees: 2</div>
-        <form id="rsvp" action="https://formspree.io/f/mblzazgw" method="POST">
+        <div class="title sm" style="margin-bottom:8px;">Kindly reply by <strong>Nov 25</strong></div>
+        <div class="title sm muted" style="margin-bottom:12px;">Number of Invitees: <strong>2</strong></div>
+
+        <div class="toggle" role="tablist" aria-label="Attendance">
+          <button type="button" class="toggle-btn active" data-value="Attending">Attending</button>
+          <button type="button" class="toggle-btn" data-value="Not Attending">Not Attending</button>
+        </div>
+
+        <form id="rsvp" action="https://formspree.io/f/mblzazgw" method="POST" novalidate>
           <input type="hidden" name="invite" value="Joseph & Anna‑Maria — 6 Dec 2025" />
-          <label>Full Name<input required name="name" placeholder="Your name" /></label>
-          <label>Phone Number<input required name="phone" inputmode="tel" placeholder="e.g., +961 …" /></label>
-          <label>Attendance
-            <select name="attending" required>
-              <option value="Attending">Attending</option>
-              <option value="Not Attending">Not Attending</option>
-            </select>
-          </label>
+          <input type="hidden" name="attending" id="attending" value="Attending" />
+
           <label>Number of Guests Attending
-            <select name="guests" required>
-              <option>1</option>
-              <option>2</option>
+            <select name="guests" id="guests">
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
             </select>
           </label>
-          <label>Message (optional)
-            <textarea name="message" placeholder="Any note or dietary needs…"></textarea>
-          </label>
+
+          <label>Guest #1<input name="guest1" id="guest1" placeholder="Full name" required /></label>
+          <label id="guest2-wrap">Guest #2<input name="guest2" id="guest2" placeholder="Full name" required /></label>
+          <label>Phone Number<input name="phone" inputmode="tel" placeholder="+961 …" /></label>
           <button class="btn" type="submit">Press To Confirm</button>
         </form>
-        <div id="thanks" class="card" style="display:none; margin-top:10px;">Thank you! Your RSVP has been received.</div>
+        <div id="thanks" class="card" style="display:none;margin-top:10px;">Thank you! Your RSVP has been received.</div>
+      </article>
 
-        <div class="footer muted">♡ Together forever ♡ • Made with love</div>
+      <!-- 8. Final Photo / Polaroid -->
+      <article class="slide" aria-label="Final">
+        <div class="polaroid">
+          <img src="images/card.jpg" alt="Together forever"/>
+          <div class="cap">♡Together forever♡</div>
+        </div>
+        <div class="title sm" style="position:absolute;bottom:70px;left:0;right:0;opacity:.9;">Made by InviteMe</div>
       </article>
 
     </section>
-    <!-- Slide dots -->
-    <div class="dots" aria-hidden="true">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-    </div>
+
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="hint">Swipe Left</div>
   </main>
 
+  <!-- Background music (autoplay attempt; toggle via button) -->
+  <audio id="bgm" src="invite-music.mp3" preload="auto" loop autoplay playsinline></audio>
+
   <script>
-    // ===== Config =====
-    const WEDDING_ISO = '2025-12-06T18:30:00+02:00'; // Asia/Beirut (UTC+02 in Dec)
-    const FORM_ENDPOINT = 'https://formspree.io/f/mblzazgw'; // <- replace with your real Formspree endpoint
-    const images = [
-      'images/bg1.jpg',
-      'images/bg2.jpg',
-      'images/bg3.jpg',
-      'images/bg4.jpg'
-    ];
+    // ===== Config you can change easily =====
+    const WEDDING_ISO = '2025-12-06T18:30:00+02:00'; // Asia/Beirut
+    const BG_IMAGES = ['images/bg1.jpg','images/bg2.jpg','images/bg3.jpg'];
 
     // ===== Background slideshow =====
     const bgImgs = Array.from(document.querySelectorAll('.bg img'));
-    let bgIndex = 0;
-    setInterval(() => {
-      bgImgs[bgIndex].classList.remove('active');
-      bgIndex = (bgIndex + 1) % bgImgs.length;
-      bgImgs[bgIndex].classList.add('active');
-    }, 5000);
+    let bgIndex = 0; setInterval(()=>{bgImgs[bgIndex].classList.remove('active');bgIndex=(bgIndex+1)%bgImgs.length;bgImgs[bgIndex].classList.add('active');},5000);
 
-    // ===== Autoplay music (no blocking overlay)
-    const audio = document.getElementById('bgm');
-    const resumeAudio = () => { audio.play().catch(()=>{}); };
-    // Try immediately
-    resumeAudio();
-    // Fallback: begin on first interaction (no overlay)
-    ['touchstart','mousedown','keydown'].forEach(ev=>{
-      window.addEventListener(ev, function once(){ resumeAudio(); window.removeEventListener(ev, once); }, {passive:true});
-    }); });
-
-    // ===== Slider logic (7 slides) =====
+    // ===== Slider logic =====
     const slidesEl = document.getElementById('slides');
-    const dots = Array.from(document.querySelectorAll('.dot'));
-    let index = 0; let startX = 0; let currentX = 0; let dragging=false;
+    const slides = Array.from(slidesEl.querySelectorAll('.slide'));
+    const dotsEl = document.getElementById('dots');
+    let index = 0, startX=0, curX=0, dragging=false;
 
-    function updateSlider(){
-      slidesEl.style.transform = `translateX(-${index * 100}vw)`;
-      dots.forEach((d,i)=>d.classList.toggle('active', i===index));
-    }
-    updateSlider();
+    function renderDots(){ dotsEl.innerHTML = ''; slides.forEach((_,i)=>{ const d=document.createElement('div'); d.className='dot' + (i===index?' active':''); dotsEl.appendChild(d); }); }
+    function updateSlider(){ slidesEl.style.transform = `translateX(-${index*100}vw)`; Array.from(dotsEl.children).forEach((d,i)=>d.classList.toggle('active', i===index)); }
+    renderDots(); updateSlider();
 
     const slider = document.getElementById('slider');
-    slider.addEventListener('touchstart', (e)=>{ dragging=true; startX = e.touches[0].clientX; currentX=startX; }, {passive:true});
-    slider.addEventListener('touchmove', (e)=>{ if(!dragging) return; currentX = e.touches[0].clientX; }, {passive:true});
-    slider.addEventListener('touchend', ()=>{
-      if(!dragging) return; dragging=false;
-      const dx = currentX - startX;
-      if (dx < -40 && index < 6) index++; // swipe left
-      else if (dx > 40 && index > 0) index--; // swipe right
-      updateSlider();
-    });
+    slider.addEventListener('touchstart',e=>{dragging=true;startX=e.touches[0].clientX;curX=startX;},{passive:true});
+    slider.addEventListener('touchmove',e=>{if(!dragging) return; curX=e.touches[0].clientX;},{passive:true});
+    slider.addEventListener('touchend',()=>{ if(!dragging) return; dragging=false; const dx=curX-startX; if(dx<-40 && index<slides.length-1) index++; else if(dx>40 && index>0) index--; updateSlider();});
+    window.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'&&index>0){index--;updateSlider();} if(e.key==='ArrowRight'&&index<slides.length-1){index++;updateSlider();}});
 
-    // Also allow left/right arrow keys (desktop testing)
-    window.addEventListener('keydown', (e)=>{
-      if(e.key==='ArrowLeft' && index>0){ index--; updateSlider(); }
-      if(e.key==='ArrowRight' && index<6){ index++; updateSlider(); }
-    });
+    // ===== Menu =====
+    const root = document.body; const menu = document.getElementById('menu');
+    document.getElementById('menuBtn').addEventListener('click',()=>root.classList.add('menu-open'));
+    document.getElementById('closeMenu').addEventListener('click',()=>root.classList.remove('menu-open'));
+    menu.querySelectorAll('a[data-slide]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault(); index=Number(a.dataset.slide)||0; updateSlider(); root.classList.remove('menu-open');}));
 
-    // ===== Countdown timer =====
-    const dEl = document.getElementById('cd-days');
-    const hEl = document.getElementById('cd-hours');
-    const mEl = document.getElementById('cd-mins');
-    const sEl = document.getElementById('cd-secs');
+    // ===== Music toggle =====
+    const audio = document.getElementById('bgm');
+    const musicBtn = document.getElementById('musicBtn');
+    function tryPlay(){ audio.play().catch(()=>{}); }
+    tryPlay(); ['touchstart','mousedown','keydown'].forEach(ev=>window.addEventListener(ev,function once(){tryPlay();window.removeEventListener(ev,once)},{passive:true}));
+    function refreshMusicIcon(){ musicBtn.textContent = audio.paused ? '♫' : '♪'; }
+    musicBtn.addEventListener('click',()=>{ if(audio.paused) audio.play(); else audio.pause(); refreshMusicIcon(); });
+    audio.addEventListener('play',refreshMusicIcon); audio.addEventListener('pause',refreshMusicIcon); refreshMusicIcon();
 
-    function pad(n){ return String(n).padStart(2,'0'); }
+    // ===== RSVP toggle logic =====
+    const attendingHidden = document.getElementById('attending');
+    const guestsSel = document.getElementById('guests');
+    const guest2Wrap = document.getElementById('guest2-wrap');
+    const guest1 = document.getElementById('guest1');
+    const guest2 = document.getElementById('guest2');
+    function syncGuestsUI(){ const attending = attendingHidden?.value||'Attending'; const two = guestsSel?.value==='2'; if(attending==='Not Attending'){ guestsSel.disabled=true; guest2Wrap.style.display='none'; guest1.required=false; guest2.required=false; } else { guestsSel.disabled=false; guest2Wrap.style.display=two?'block':'none'; guest1.required=true; guest2.required=two; } }
+    document.querySelectorAll('.toggle-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); attendingHidden.value = btn.dataset.value; syncGuestsUI();}));
+    guestsSel?.addEventListener('change',syncGuestsUI); syncGuestsUI();
 
-    function tick(){
-      const now = new Date();
-      const target = new Date(WEDDING_ISO);
-      let diff = Math.max(0, target - now);
-      const days = Math.floor(diff / (1000*60*60*24)); diff -= days*(1000*60*60*24);
-      const hours = Math.floor(diff / (1000*60*60)); diff -= hours*(1000*60*60);
-      const mins = Math.floor(diff / (1000*60)); diff -= mins*(1000*60);
-      const secs = Math.floor(diff / 1000);
-      dEl.textContent = days; hEl.textContent = pad(hours); mEl.textContent = pad(mins); sEl.textContent = pad(secs);
-    }
-    tick(); setInterval(tick, 1000);
-
-    // ===== Copy to clipboard helper =====
-    function copyToClipboard(text){
-      navigator.clipboard?.writeText(text).then(()=>{
-        const t = document.createElement('div');
-        t.textContent = 'Link copied';
-        t.style.cssText='position:fixed;left:50%;top:12px;transform:translateX(-50%);background:#111;color:#fff;padding:8px 12px;border-radius:10px;opacity:.95;z-index:60';
-        document.body.appendChild(t); setTimeout(()=>t.remove(), 1800);
-      });
-    }
-    window.copyToClipboard = copyToClipboard;
-
-    // ===== Formspree hook (AJAX submit; still works without JS) =====
-    const form = document.getElementById('rsvp');
-    form.setAttribute('action', FORM_ENDPOINT);
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const data = new FormData(form);
-      try{
-        const res = await fetch(FORM_ENDPOINT, { method:'POST', body:data, headers:{ 'Accept':'application/json' } });
-        if (res.ok){ form.reset(); document.getElementById('thanks').style.display = 'block'; }
-        else{ alert('There was a problem. Please try again.'); }
-      }catch(err){ alert('Network error. Please try again.'); }
-    });
+    // ===== Countdown (if you want it visible, add the elements to a slide) =====
+    // You can insert a countdown anywhere using WEDDING_ISO; left here for extensibility.
   </script>
 </body>
 </html>
