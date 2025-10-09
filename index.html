@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Joseph & Anna‑Maria — Wedding Invitation</title>
-  <meta name="description" content="Mobile swipe wedding invitation with music, menu, maps, and RSVP (Formspree)." />
+  <title>Joseph & Anna‑Maria — Wedding Invitation (Mobile)</title>
+  <meta name="description" content="Mobile swipe wedding invitation with menu, music, maps, and RSVP (Formspree)." />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
     .bg img.active{opacity:1}
     .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.45))}
 
-    /* Mobile frame to ensure single-page view on any device */
+    /* Mobile frame to ensure ONE PAGE AT A TIME on any device */
     .frame{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
     .phone{position:relative;width:100vw;height:100dvh;overflow:hidden}
 
@@ -44,7 +44,7 @@
     /* Swipe hint */
     .hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:13px;opacity:.9;z-index:5}
 
-    /* Slider (mobile only interaction) */
+    /* Slider (mobile) */
     .slider{position:relative;height:100%;width:100%;touch-action:pan-y;overflow:hidden}
     .slides{display:flex;height:100%;transition:transform .45s ease}
     .slide{position:relative;flex:0 0 100%;width:100%;height:100%;padding:24px 18px env(safe-area-inset-bottom);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
@@ -95,10 +95,10 @@
   </style>
 </head>
 <body>
-  <!-- Background slideshow (uses your two uploaded photos) -->
+  <!-- Background slideshow — use your two uploaded files placed NEXT TO index.html -->
   <div class="bg" aria-hidden="true">
-    <img src="images/photo_2025-10-09_11-19-39.jpg" class="active" alt=""/>
-    <img src="images/photo_2025-10-09_11-19-49.jpg" alt=""/>
+    <img src="photo_2025-10-09_11-19-39.jpg" class="active" alt=""/>
+    <img src="photo_2025-10-09_11-19-49.jpg" alt=""/>
   </div>
 
   <div class="frame">
@@ -108,7 +108,7 @@
       <!-- Bottom-left music toggle -->
       <button id="musicBtn" class="music" aria-label="Toggle music">♪</button>
 
-      <!-- Menu panel (shows the first 7 pages, as requested) -->
+      <!-- Menu panel (first 7 pages) -->
       <nav class="menu" id="menu">
         <button class="close btn" id="closeMenu">✕</button>
         <a href="#" data-slide="0">Home</a>
@@ -211,10 +211,10 @@
             <div id="thanks" class="card" style="display:none;margin-top:10px;">Thank you! Your RSVP has been received.</div>
           </article>
 
-          <!-- 8. Final Photo / Polaroid (not in the menu, swipe-only) -->
+          <!-- 8. Final (not in menu) -->
           <article class="slide" aria-label="Final">
             <div class="polaroid">
-              <img src="images/photo_2025-10-09_11-19-49.jpg" alt="Together forever"/>
+              <img src="photo_2025-10-09_11-19-49.jpg" alt="Together forever"/>
               <div class="cap">♡Together forever♡</div>
             </div>
             <div class="title sm" style="position:absolute;bottom:70px;left:0;right:0;opacity:.9;">Made by InviteMe</div>
@@ -233,12 +233,12 @@
   <script>
     // ===== Background slideshow (2 photos, 5s each) =====
     const bgImgs = Array.from(document.querySelectorAll('.bg img'));
-    let bgIndex = 0; setInterval(()=>{bgImgs[bgIndex].classList.remove('active');bgIndex=(bgIndex+1)%bgImgs.length;bgImgs[bgIndex].classList.add('active');},5000);
+    let bgIndex = 0; setInterval(()=>{bgImgs[bgIndex]?.classList.remove('active');bgIndex=(bgIndex+1)%bgImgs.length;bgImgs[bgIndex]?.classList.add('active');},5000);
 
-    // ===== Slider logic (mobile-first) =====
+    // ===== Slider logic (mobile) =====
     const slidesEl = document.getElementById('slides');
     const slides = Array.from(slidesEl.querySelectorAll('.slide'));
-    slidesEl.style.width = `${slides.length * 100}vw`; // each page shows separately
+    slidesEl.style.width = `${slides.length * 100}vw`; // one full-width page at a time
     const dotsEl = document.getElementById('dots');
     let index = 0, startX=0, curX=0, dragging=false;
 
@@ -251,7 +251,7 @@
     slider.addEventListener('touchmove',e=>{if(!dragging) return; curX=e.touches[0].clientX;},{passive:true});
     slider.addEventListener('touchend',()=>{ if(!dragging) return; dragging=false; const dx=curX-startX; if(dx<-40 && index<slides.length-1) index++; else if(dx>40 && index>0) index--; updateSlider();});
 
-    // ===== Menu (shows 7 titles; navigates to slides 0..6) =====
+    // ===== Menu =====
     const phone = document.getElementById('phone');
     const menu = document.getElementById('menu');
     document.getElementById('menuBtn').addEventListener('click',()=>phone.classList.add('menu-open'));
@@ -273,8 +273,8 @@
     const guest2Wrap = document.getElementById('guest2-wrap');
     const guest1 = document.getElementById('guest1');
     const guest2 = document.getElementById('guest2');
-    function syncGuestsUI(){ const attending = attendingHidden?.value||'Attending'; const two = guestsSel?.value==='2'; if(attending==='Not Attending'){ guestsSel.disabled=true; guest2Wrap.style.display='none'; guest1.required=false; guest2.required=false; } else { guestsSel.disabled=false; guest2Wrap.style.display=two?'block':'none'; guest1.required=true; guest2.required=two; } }
-    document.querySelectorAll('.toggle-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); attendingHidden.value = btn.dataset.value; syncGuestsUI();}));
+    function syncGuestsUI(){ const attending = attendingHidden?.value||'Attending'; const two = guestsSel?.value==='2'; if(attending==='Not Attending'){ guestsSel.disabled=true; if(guest2Wrap) guest2Wrap.style.display='none'; if(guest1) guest1.required=false; if(guest2) guest2.required=false; } else { guestsSel.disabled=false; if(guest2Wrap) guest2Wrap.style.display=two?'block':'none'; if(guest1) guest1.required=true; if(guest2) guest2.required=two; } }
+    document.querySelectorAll('.toggle-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(attendingHidden) attendingHidden.value = btn.dataset.value; syncGuestsUI();}));
     guestsSel?.addEventListener('change',syncGuestsUI); syncGuestsUI();
   </script>
 </body>
