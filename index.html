@@ -234,53 +234,115 @@
   <audio id="bgm" src="invite-music.mp3" preload="auto" loop autoplay playsinline></audio>
 
   <script>
-    // ===== Background slideshow (2 photos, 5s each) =====
-    const bgImgs = Array.from(document.querySelectorAll('.bg img'));
-    let bgIndex = 0; setInterval(()=>{bgImgs[bgIndex]?.classList.remove('active');bgIndex=(bgIndex+1)%bgImgs.length;bgImgs[bgIndex]?.classList.add('active');},5000);
+  // ===== Background slideshow (2 photos, 5s each) =====
+  var bgImgs = Array.prototype.slice.call(document.querySelectorAll('.bg img'));
+  var bgIndex = 0;
+  setInterval(function(){
+    if (!bgImgs.length) return;
+    if (bgImgs[bgIndex]) bgImgs[bgIndex].classList.remove('active');
+    bgIndex = (bgIndex + 1) % bgImgs.length;
+    if (bgImgs[bgIndex]) bgImgs[bgIndex].classList.add('active');
+  }, 5000);
 
-    // ===== Slider logic (mobile) =====
-    const slidesEl = document.getElementById('slides');
-    const slides = Array.from(slidesEl.querySelectorAll('.slide'));
-    slidesEl.style.width = `${slides.length * 100}vw`; // one full-width page at a time
-    const dotsEl = document.getElementById('dots');
-    let index = 0, startX=0, curX=0, dragging=false;
+  // ===== Slider logic (mobile) =====
+  var slidesEl = document.getElementById('slides');
+  var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
+  // each page shows separately and fills the phone width
+  slidesEl.style.width = (slides.length * 100) + '%';
+  var dotsEl = document.getElementById('dots');
+  var index = 0, startX=0, curX=0, dragging=false;
 
-    function renderDots(){ dotsEl.innerHTML = ''; slides.forEach((_,i)=>{ const d=document.createElement('div'); d.className='dot' + (i===index?' active':''); dotsEl.appendChild(d); }); }
-    function updateSlider(){ slidesEl.style.transform = `translateX(-${index*100}vw)`; Array.from(dotsEl.children).forEach((d,i)=>d.classList.toggle('active', i===index)); }
-    renderDots(); updateSlider();
+  function renderDots(){
+    dotsEl.innerHTML = '';
+    for (var i=0;i<slides.length;i++){
+      var d=document.createElement('div');
+      d.className='dot' + (i===index?' active':'');
+      dotsEl.appendChild(d);
+    }
+  }
+  function updateSlider(){
+    slidesEl.style.transform = 'translateX(-' + (index*100) + '%)';
+    var dots = dotsEl.children;
+    for (var i=0;i<dots.length;i++){ dots[i].classList.toggle('active', i===index); }
+  }
+  renderDots(); updateSlider();
 
-    const slider = document.getElementById('slider');
-    slider.addEventListener('touchstart',e=>{dragging=true;startX=e.touches[0].clientX;curX=startX;},{passive:true});
-    slider.addEventListener('touchmove',e=>{if(!dragging) return; curX=e.touches[0].clientX;},{passive:true});
-    slider.addEventListener('touchend',()=>{ if(!dragging) return; dragging=false; const dx=curX-startX; if(dx<-40 && index<slides.length-1) index++; else if(dx>40 && index>0) index--; updateSlider();});
+  var slider = document.getElementById('slider');
+  slider.addEventListener('touchstart', function(e){ dragging=true; startX=e.touches[0].clientX; curX=startX; }, {passive:true});
+  slider.addEventListener('touchmove', function(e){ if(!dragging) return; curX=e.touches[0].clientX; }, {passive:true});
+  slider.addEventListener('touchend', function(){ if(!dragging) return; dragging=false; var dx=curX-startX; if(dx<-40 && index<slides.length-1) index++; else if(dx>40 && index>0) index--; updateSlider(); });
 
-    // ===== Menu =====
-    const phone = document.getElementById('phone');
-    const menu = document.getElementById('menu');
-    document.getElementById('menuBtn').addEventListener('click',()=>phone.classList.add('menu-open'));
-    document.getElementById('closeMenu').addEventListener('click',()=>phone.classList.remove('menu-open'));
-    menu.querySelectorAll('a[data-slide]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault(); index=Number(a.dataset.slide)||0; updateSlider(); phone.classList.remove('menu-open');}));
+  // ===== Menu (7 items -> slides 0..6) =====
+  var phone = document.getElementById('phone');
+  var menu = document.getElementById('menu');
+  document.getElementById('menuBtn').addEventListener('click', function(){ phone.classList.add('menu-open'); });
+  document.getElementById('closeMenu').addEventListener('click', function(){ phone.classList.remove('menu-open'); });
+  var menuLinks = menu.querySelectorAll('a[data-slide]');
+  for (var j=0;j<menuLinks.length;j++){
+    menuLinks[j].addEventListener('click', function(e){
+      e.preventDefault();
+      index = Number(this.getAttribute('data-slide')) || 0;
+      updateSlider();
+      phone.classList.remove('menu-open');
+    });
+  }
 
-    // ===== Music toggle =====
-    const audio = document.getElementById('bgm');
-    const musicBtn = document.getElementById('musicBtn');
-    function tryPlay(){ audio.play().then(()=>{clearInterval(autoKick);}).catch(()=>{}); }
-    tryPlay();
-    window.addEventListener('load', tryPlay);
-    document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) tryPlay(); });
-    const autoKick = setInterval(tryPlay, 2000);
-    function refreshMusicIcon(){ musicBtn.textContent = audio.paused ? '♫' : '♪'; }
-    musicBtn.addEventListener('click',()=>{ if(audio.paused) audio.play(); else audio.pause(); refreshMusicIcon(); });
-    audio.addEventListener('play',refreshMusicIcon); audio.addEventListener('pause',refreshMusicIcon); refreshMusicIcon();
-    // ===== RSVP toggle logic =====
-    const attendingHidden = document.getElementById('attending');
-    const guestsSel = document.getElementById('guests');
-    const guest2Wrap = document.getElementById('guest2-wrap');
-    const guest1 = document.getElementById('guest1');
-    const guest2 = document.getElementById('guest2');
-    function syncGuestsUI(){ const attending = attendingHidden?.value||'Attending'; const two = guestsSel?.value==='2'; if(attending==='Not Attending'){ guestsSel.disabled=true; if(guest2Wrap) guest2Wrap.style.display='none'; if(guest1) guest1.required=false; if(guest2) guest2.required=false; } else { guestsSel.disabled=false; if(guest2Wrap) guest2Wrap.style.display=two?'block':'none'; if(guest1) guest1.required=true; if(guest2) guest2.required=two; } }
-    document.querySelectorAll('.toggle-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(attendingHidden) attendingHidden.value = btn.dataset.value; syncGuestsUI();}));
-    guestsSel?.addEventListener('change',syncGuestsUI); syncGuestsUI();
-  </script>
+  // ===== Music autoplay + toggle (no tap overlay) =====
+  var audio = document.getElementById('bgm');
+  var musicBtn = document.getElementById('musicBtn');
+  var autoKick = null;
+  function tryPlay(){
+    if (!audio) return;
+    var p = audio.play();
+    if (p && typeof p.then === 'function'){
+      p.then(function(){ if (autoKick){ clearInterval(autoKick); autoKick = null; } refreshMusicIcon(); })
+       .catch(function(){ /* autoplay may be blocked on some iOS versions until first interaction */ });
+    }
+  }
+  function refreshMusicIcon(){ musicBtn.textContent = (audio && !audio.paused) ? '♪' : '♫'; }
+  window.addEventListener('load', tryPlay);
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) tryPlay(); });
+  autoKick = setInterval(tryPlay, 2000); // nudge a few times
+  tryPlay();
+  musicBtn.addEventListener('click', function(){ if(audio.paused){ audio.play(); } else { audio.pause(); } refreshMusicIcon(); });
+  audio.addEventListener('play', refreshMusicIcon);
+  audio.addEventListener('pause', refreshMusicIcon);
+  refreshMusicIcon();
+
+  // ===== RSVP toggle logic (no optional chaining for older browsers) =====
+  var attendingHidden = document.getElementById('attending');
+  var guestsSel = document.getElementById('guests');
+  var guest2Wrap = document.getElementById('guest2-wrap');
+  var guest1 = document.getElementById('guest1');
+  var guest2 = document.getElementById('guest2');
+
+  function syncGuestsUI(){
+    if (!attendingHidden) return;
+    var attending = attendingHidden.value || 'Attending';
+    var two = guestsSel && guestsSel.value === '2';
+    if (attending === 'Not Attending'){
+      if (guestsSel) guestsSel.disabled = true;
+      if (guest2Wrap) guest2Wrap.style.display = 'none';
+      if (guest1) guest1.required = false;
+      if (guest2) guest2.required = false;
+    } else {
+      if (guestsSel) guestsSel.disabled = false;
+      if (guest2Wrap) guest2Wrap.style.display = two ? 'block' : 'none';
+      if (guest1) guest1.required = true;
+      if (guest2) guest2.required = !!two;
+    }
+  }
+  var toggles = document.querySelectorAll('.toggle-btn');
+  for (var k=0;k<toggles.length;k++){
+    toggles[k].addEventListener('click', function(){
+      for (var m=0;m<toggles.length;m++){ toggles[m].classList.remove('active'); }
+      this.classList.add('active');
+      if (attendingHidden) attendingHidden.value = this.getAttribute('data-value');
+      syncGuestsUI();
+    });
+  }
+  if (guestsSel) guestsSel.addEventListener('change', syncGuestsUI);
+  syncGuestsUI();
+</script>
 </body>
 </html>
