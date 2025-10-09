@@ -96,11 +96,9 @@
   </div>
 
   <!-- Background music -->
-  <audio id="bgm" src="invite-music.mp3" preload="auto" loop></audio>
+  <audio id="bgm" src="invite-music.mp3" preload="auto" loop autoplay playsinline></audio>
 
-  <!-- Tap to start overlay (also unlocks audio autoplay on mobile) -->
-  <div class="start-overlay" id="start">
-    <div class="pulse"><span class="icon">▶</span></div>
+  
     <div class="title md">Tap to start</div>
     <div class="muted" style="font-size:12px;">Swipe left for the next section</div>
   </div>
@@ -270,11 +268,15 @@
       bgImgs[bgIndex].classList.add('active');
     }, 5000);
 
-    // ===== Start overlay: kick off audio + enable interaction =====
-    const start = document.getElementById('start');
+    // ===== Autoplay music (no blocking overlay)
     const audio = document.getElementById('bgm');
     const resumeAudio = () => { audio.play().catch(()=>{}); };
-    start.addEventListener('click', () => { start.style.display='none'; resumeAudio(); });
+    // Try immediately
+    resumeAudio();
+    // Fallback: begin on first interaction (no overlay)
+    ['touchstart','mousedown','keydown'].forEach(ev=>{
+      window.addEventListener(ev, function once(){ resumeAudio(); window.removeEventListener(ev, once); }, {passive:true});
+    }); });
 
     // ===== Slider logic (7 slides) =====
     const slidesEl = document.getElementById('slides');
