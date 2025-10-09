@@ -24,14 +24,14 @@
     body{font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji',sans-serif;color:#fff;background:#000;overflow:hidden;-webkit-tap-highlight-color: transparent}
 
     /* Background slideshow */
-    .bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
+    .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
     .bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
     .bg img.active{opacity:1}
-    .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.45))}
+    .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.60))}
 
     /* Mobile frame to ensure ONE PAGE AT A TIME on any device */
     .frame{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-    .phone{position:relative;width:100vw;height:100dvh;overflow:hidden}
+    .phone{position:relative;width:100vw;height:100dvh;overflow:hidden;z-index:1}
 
     /* Top-left hamburger */
     .topbar{position:absolute;left:10px;top:10px;z-index:20}
@@ -56,6 +56,9 @@
     .md{font-size:28px}
     .sm{font-size:18px}
     .muted{color:var(--muted)}
+
+    /* add readable stroke around headings on bright photos */
+    .script,.title{ text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 2px 12px rgba(0,0,0,.55); }
 
     .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border-radius:999px;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
     .card{background:var(--panel);border-radius:18px;padding:16px 14px;box-shadow:0 6px 20px rgba(0,0,0,.2);backdrop-filter:saturate(110%) blur(2px)}
@@ -261,12 +264,14 @@
     // ===== Music toggle =====
     const audio = document.getElementById('bgm');
     const musicBtn = document.getElementById('musicBtn');
-    function tryPlay(){ audio.play().catch(()=>{}); }
-    tryPlay(); ['touchstart','mousedown','keydown'].forEach(ev=>window.addEventListener(ev,function once(){tryPlay();window.removeEventListener(ev,once)},{passive:true}));
+    function tryPlay(){ audio.play().then(()=>{clearInterval(autoKick);}).catch(()=>{}); }
+    tryPlay();
+    window.addEventListener('load', tryPlay);
+    document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) tryPlay(); });
+    const autoKick = setInterval(tryPlay, 2000);
     function refreshMusicIcon(){ musicBtn.textContent = audio.paused ? '♫' : '♪'; }
     musicBtn.addEventListener('click',()=>{ if(audio.paused) audio.play(); else audio.pause(); refreshMusicIcon(); });
     audio.addEventListener('play',refreshMusicIcon); audio.addEventListener('pause',refreshMusicIcon); refreshMusicIcon();
-
     // ===== RSVP toggle logic =====
     const attendingHidden = document.getElementById('attending');
     const guestsSel = document.getElementById('guests');
