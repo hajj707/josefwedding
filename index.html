@@ -154,15 +154,17 @@
           <!-- 1. Home -->
           <article class="slide" aria-label="Home">
             <div class="chip">With love</div>
-            <h1 class="script lg" style="margin:14px 0 6px;">Joseph &amp; Anna-Maria</h1>
+            <!-- Changed to readable serif title font -->
+            <h1 class="title lg" style="margin:14px 0 6px;">Joseph &amp; Anna-Maria</h1>
             <div class="title sm muted">are getting married</div>
           </article>
 
           <!-- 2. Names -->
           <article class="slide" aria-label="Names">
-            <h2 class="script lg">Joseph</h2>
-            <h2 class="script lg" style="margin-top:-6px;">&amp;</h2>
-            <h2 class="script lg" style="margin-top:-6px;">Anna-Maria</h2>
+            <!-- Changed to readable serif title font -->
+            <h2 class="title lg">Joseph</h2>
+            <h2 class="title lg" style="margin-top:-6px;">&amp;</h2>
+            <h2 class="title lg" style="margin-top:-6px;">Anna-Maria</h2>
             <div class="title sm muted" style="margin-top:10px;">are getting married</div>
           </article>
 
@@ -172,7 +174,8 @@
             <div class="title md" style="margin:12px 0 2px;">With joyous hearts,</div>
             <div class="title md"><strong>Gemayel &amp; Elias families</strong></div>
             <div class="title sm muted" style="margin-top:8px;">request your presence to attend the wedding of</div>
-            <div class="script lg" style="margin:14px 0 8px;">Joseph &amp; Anna-Maria</div>
+            <!-- Changed to readable serif title font -->
+            <div class="title lg" style="margin:14px 0 8px;">Joseph &amp; Anna-Maria</div>
             <div class="title sm">on December 6, 2025</div>
             <div class="muted">at 6:30 pm</div>
           </article>
@@ -205,14 +208,15 @@
           <article class="slide" aria-label="Gift Registry">
             <div class="script md" style="margin-bottom:8px;">Gift Registry</div>
             <div class="title sm" style="max-width:86%;">Your presence is the only gift we truly need. But if you wish to bless us further, our wedding registry can be found at:</div>
-            <div class="title md" style="margin-top:12px;"><strong>Whish Money, All Branches</strong></div>
-            <div class="title sm">Account ID: __________</div>
+            <!-- Updated to requested number format -->
+            <div class="title md" style="margin-top:12px;"><strong>Whish Money (All Branches): 70330085</strong></div>
           </article>
 
           <!-- 7. RSVP -->
           <article class="slide" aria-label="RSVP">
             <div class="title sm" style="margin-bottom:8px;">Kindly reply by <strong>Nov 25</strong></div>
-            <div class="title sm muted" style="margin-bottom:12px;">Number of Invitees: <strong>2</strong></div>
+            <!-- Updated invitee max display to 6 -->
+            <div class="title sm muted" style="margin-bottom:12px;">Number of Invitees: <strong>6</strong></div>
 
             <div class="toggle" role="tablist" aria-label="Attendance">
               <button type="button" class="toggle-btn active" data-value="Attending">Attending</button>
@@ -224,14 +228,25 @@
               <input type="hidden" name="attending" id="attending" value="Attending" />
 
               <label>Number of Guests Attending
+                <!-- Expanded to 1–6 -->
                 <select name="guests" id="guests">
                   <option value="1">1</option>
                   <option value="2" selected>2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
                 </select>
               </label>
 
               <label>Guest #1<input name="guest1" id="guest1" placeholder="Full name" required /></label>
               <label id="guest2-wrap">Guest #2<input name="guest2" id="guest2" placeholder="Full name" required /></label>
+              <!-- Additional guest fields (shown/required dynamically up to selection) -->
+              <label id="guest3-wrap">Guest #3<input name="guest3" id="guest3" placeholder="Full name" /></label>
+              <label id="guest4-wrap">Guest #4<input name="guest4" id="guest4" placeholder="Full name" /></label>
+              <label id="guest5-wrap">Guest #5<input name="guest5" id="guest5" placeholder="Full name" /></label>
+              <label id="guest6-wrap">Guest #6<input name="guest6" id="guest6" placeholder="Full name" /></label>
+
               <label>Phone Number<input name="phone" inputmode="tel" placeholder="+961 …" /></label>
               <button class="btn" type="submit">Press To Confirm</button>
             </form>
@@ -369,29 +384,47 @@
   audio.addEventListener('pause', refreshMusicIcon);
   refreshMusicIcon();
 
-  /* ===== RSVP toggle logic ===== */
+  /* ===== RSVP toggle logic (generalized for up to 6 guests) ===== */
   var attendingHidden = document.getElementById('attending');
   var guestsSel = document.getElementById('guests');
-  var guest2Wrap = document.getElementById('guest2-wrap');
-  var guest1 = document.getElementById('guest1');
-  var guest2 = document.getElementById('guest2');
+
+  // Guest fields and wrappers
+  var guestFields = [];
+  var guestWraps = [];
+  for (var gi = 1; gi <= 6; gi++) {
+    guestFields[gi] = document.getElementById('guest' + gi);
+    guestWraps[gi] = document.getElementById('guest' + gi + '-wrap');
+  }
+
+  function setWrapVisible(wrap, show){
+    if (!wrap) return;
+    wrap.style.display = show ? 'block' : 'none';
+  }
 
   function syncGuestsUI(){
     if (!attendingHidden) return;
     var attending = attendingHidden.value || 'Attending';
-    var two = guestsSel && guestsSel.value === '2';
+    var maxGuests = 6;
+    var count = guestsSel ? parseInt(guestsSel.value || '1', 10) : 1;
+    if (isNaN(count) || count < 1) count = 1;
+    if (count > maxGuests) count = maxGuests;
+
     if (attending === 'Not Attending'){
       if (guestsSel) guestsSel.disabled = true;
-      if (guest2Wrap) guest2Wrap.style.display = 'none';
-      if (guest1) guest1.required = false;
-      if (guest2) guest2.required = false;
+      for (var i = 1; i <= maxGuests; i++){
+        setWrapVisible(guestWraps[i], false);
+        if (guestFields[i]) guestFields[i].required = false;
+      }
     } else {
       if (guestsSel) guestsSel.disabled = false;
-      if (guest2Wrap) guest2Wrap.style.display = two ? 'block' : 'none';
-      if (guest1) guest1.required = true;
-      if (guest2) guest2.required = !!two;
+      for (var i = 1; i <= maxGuests; i++){
+        var needed = i <= count;
+        setWrapVisible(guestWraps[i], needed);
+        if (guestFields[i]) guestFields[i].required = needed;
+      }
     }
   }
+
   var toggles = document.querySelectorAll('.toggle-btn');
   for (var k=0;k<toggles.length;k++){
     toggles[k].addEventListener('click', function(){
