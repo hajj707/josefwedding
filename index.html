@@ -344,10 +344,12 @@
   /* ===== Slider logic (mobile) ===== */
   var slidesEl = document.getElementById('slides');
   var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
+  document.documentElement.style.setProperty('--count', String(slides.length));
 
   var dotsEl = document.getElementById('dots');
   var index = 0, startX=0, curX=0, dragging=false;
-  var step = 100; // move by 100% per slide
+  var step = 100 / slides.length;
+  var started = false; // <--- NEW: has user pressed Start?
 
   function renderDots(){
     dotsEl.innerHTML = '';
@@ -373,8 +375,15 @@
     if(!dragging) return;
     dragging=false;
     var dx=curX-startX;
-    if(dx<-40 && index<slides.length-1) index++;
-    else if(dx>40 && index>0) index--;
+    if(dx<-40 && index<slides.length-1) {
+      // swipe left → next slide
+      index++;
+    } else if(dx>40) {
+      // swipe right → previous slide
+      // if we've already started, do NOT allow going back before slide 1
+      var minIndex = started ? 1 : 0;
+      if (index > minIndex) index--;
+    }
     updateSlider();
   });
 
@@ -382,8 +391,13 @@
   var startBtn = document.getElementById('startBtn');
   if (startBtn){
     startBtn.addEventListener('click', function(){
+      started = true;   // mark that user has started
       index = 1;        // move to Names slide
       updateSlider();
+
+      // hide "Start" from menu after first tap (optional but nice)
+      var startLink = document.querySelector('#menu a[data-slide="0"]');
+      if (startLink) startLink.style.display = 'none';
     });
   }
 
@@ -396,7 +410,14 @@
   for (var j=0;j<menuLinks.length;j++){
     menuLinks[j].addEventListener('click', function(e){
       e.preventDefault();
-      index = Number(this.getAttribute('data-slide')) || 0;
+      var targetIndex = Number(this.getAttribute('data-slide')) || 0;
+
+      // If user already started, don't allow going back to slide 0 from the menu
+      if (started && targetIndex === 0) {
+        targetIndex = 1;
+      }
+
+      index = targetIndex;
       updateSlider();
       phone.classList.remove('menu-open');
     });
@@ -440,9 +461,9 @@
     tryPlayOnce().finally(function(){
       unlockBtn && unlockBtn.classList.add('hidden');
       refreshMusicIcon();
-      window.removeEventListener('pointerdown', userUnlock);
-      window.removeEventListener('keydown', userUnlock);
-      window.removeEventListener('touchstart', userUnlock);
+      window.removeEventListener('pointerdown', userUnlock, {passive:true});
+      window.removeEventListener('keydown', userUnlock, {passive:true});
+      window.removeEventListener('touchstart', userUnlock, {passive:true});
     });
   }
   window.addEventListener('pointerdown', userUnlock, {passive:true});
@@ -511,6 +532,6 @@
   }
   if (guestsSel) guestsSel.addEventListener('change', syncGuestsUI);
   syncGuestsUI();
-  </script>
+</script>
 </body>
 </html>
