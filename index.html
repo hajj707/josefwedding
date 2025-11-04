@@ -344,12 +344,10 @@
   /* ===== Slider logic (mobile) ===== */
   var slidesEl = document.getElementById('slides');
   var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
-  document.documentElement.style.setProperty('--count', String(slides.length));
 
   var dotsEl = document.getElementById('dots');
   var index = 0, startX=0, curX=0, dragging=false;
-  var step = 100 / slides.length;
-  var started = false; // <--- NEW: has user pressed Start?
+  var step = 100; // move by 100% per slide
 
   function renderDots(){
     dotsEl.innerHTML = '';
@@ -375,33 +373,30 @@
     if(!dragging) return;
     dragging=false;
     var dx=curX-startX;
-    if(dx<-40 && index<slides.length-1) {
-      // swipe left → next slide
-      index++;
-    } else if(dx>40) {
-      // swipe right → previous slide
-      // if we've already started, do NOT allow going back before slide 1
-      var minIndex = started ? 1 : 0;
-      if (index > minIndex) index--;
-    }
+    if(dx<-40 && index<slides.length-1) index++;
+    else if(dx>40 && index>0) index--;
     updateSlider();
   });
 
-  /* ===== Start button -> jump to slide 1 (Names) ===== */
+  /* ===== Start button: remove first slide and jump to Names ===== */
   var startBtn = document.getElementById('startBtn');
   if (startBtn){
     startBtn.addEventListener('click', function(){
-      started = true;   // mark that user has started
-      index = 1;        // move to Names slide
+      // remove the first slide (the start screen)
+      var firstSlide = slidesEl.querySelector('.slide');
+      if (firstSlide) {
+        slidesEl.removeChild(firstSlide);
+      }
+      // rebuild slides list without the removed slide
+      slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
+      // reset index so the new first slide is "Names"
+      index = 0;
+      renderDots();
       updateSlider();
-
-      // hide "Start" from menu after first tap (optional but nice)
-      var startLink = document.querySelector('#menu a[data-slide="0"]');
-      if (startLink) startLink.style.display = 'none';
     });
   }
 
-  /* ===== Menu (7 items -> slides 0..6) ===== */
+  /* ===== Menu (7 items -> slides 0..6 BEFORE removal, but now "Start" also goes to Names) ===== */
   var phone = document.getElementById('phone');
   var menu = document.getElementById('menu');
   document.getElementById('menuBtn').addEventListener('click', function(){ phone.classList.add('menu-open'); });
@@ -411,13 +406,12 @@
     menuLinks[j].addEventListener('click', function(e){
       e.preventDefault();
       var targetIndex = Number(this.getAttribute('data-slide')) || 0;
-
-      // If user already started, don't allow going back to slide 0 from the menu
-      if (started && targetIndex === 0) {
-        targetIndex = 1;
+      // After removing the first slide, slide 0 is already "Names"
+      if (targetIndex === 0 && slides.length < 8) {
+        index = 0;
+      } else {
+        index = targetIndex;
       }
-
-      index = targetIndex;
       updateSlider();
       phone.classList.remove('menu-open');
     });
@@ -461,9 +455,9 @@
     tryPlayOnce().finally(function(){
       unlockBtn && unlockBtn.classList.add('hidden');
       refreshMusicIcon();
-      window.removeEventListener('pointerdown', userUnlock, {passive:true});
-      window.removeEventListener('keydown', userUnlock, {passive:true});
-      window.removeEventListener('touchstart', userUnlock, {passive:true});
+      window.removeEventListener('pointerdown', userUnlock);
+      window.removeEventListener('keydown', userUnlock);
+      window.removeEventListener('touchstart', userUnlock);
     });
   }
   window.addEventListener('pointerdown', userUnlock, {passive:true});
@@ -484,7 +478,6 @@
   var attendingHidden = document.getElementById('attending');
   var guestsSel = document.getElementById('guests');
 
-  // Guest fields and wrappers
   var guestFields = [];
   var guestWraps = [];
   for (var gi = 1; gi <= 6; gi++) {
@@ -532,6 +525,6 @@
   }
   if (guestsSel) guestsSel.addEventListener('change', syncGuestsUI);
   syncGuestsUI();
-</script>
+  </script>
 </body>
 </html>
