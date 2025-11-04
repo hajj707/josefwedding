@@ -18,7 +18,6 @@
       --panel2: rgba(0,0,0,.40);
       --border: rgba(255,255,255,.75);
       --dots-y: 48px;
-      --count: 8; /* number of slides */
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
@@ -34,8 +33,22 @@
     .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.60))}
 
     /* Mobile frame */
-    .frame{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-    .phone{position:relative;width:100vw;height:100dvh;overflow:hidden;z-index:1}
+    .frame{
+      position:fixed;inset:0;
+      display:flex;align-items:center;justify-content:center;
+      padding:12px;
+    }
+    .phone{
+      position:relative;
+      width:min(430px, 100vw);
+      height:100dvh;
+      max-height:900px;
+      overflow:hidden;
+      z-index:1;
+      border-radius:32px;
+      box-shadow:0 0 0 1px rgba(255,255,255,.15),0 18px 40px rgba(0,0,0,.6);
+      background:transparent;
+    }
 
     /* Top-left hamburger */
     .topbar{position:absolute;left:10px;top:10px;z-index:20}
@@ -60,19 +73,27 @@
     .hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:13px;opacity:.9;z-index:5}
 
     /* Slider */
-    .slider{position:relative;height:100%;width:100%;touch-action:pan-y;overflow:hidden}
+    .slider{
+      position:relative;
+      height:100%;
+      width:100%;
+      touch-action:pan-y;
+      overflow:hidden;
+    }
     .slides{
-      display:flex;height:100%;
-      width:calc(var(--count) * 100%); /* container = sum of all slides */
-      transition:transform .45s ease; will-change: transform;
+      display:flex;
+      height:100%;
+      width:100%;
+      transition:transform .45s ease;
+      will-change: transform;
     }
     .slide{
       position:relative;
-      flex:0 0 calc(100% / var(--count)); /* each slide = 1/var(--count) */
-      width:calc(100% / var(--count));
+      flex:0 0 100%;
+      width:100%;
       height:100%;
       padding:24px 18px env(safe-area-inset-bottom);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center
+      display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
     }
 
     /* Typography */
@@ -82,7 +103,7 @@
     .md{font-size:28px}
     .sm{font-size:18px}
     .muted{color:var(--muted)}
-    .script,.title{ text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 2px 12px rgba(0,0,0,.55); } /* readability */
+    .script,.title{ text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 2px 12px rgba(0,0,0,.55); }
 
     .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border-radius:999px;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
     .card{background:var(--panel);border-radius:18px;padding:16px 14px;box-shadow:0 6px 20px rgba(0,0,0,.2);backdrop-filter:saturate(110%) blur(2px)}
@@ -168,7 +189,7 @@
     <img src="photo4.JPG" alt=""/>
     <img src="photo5.JPG" alt=""/>
     <img src="photo6.JPG" alt=""/>
-	<img src="photo7.JPG" alt=""/>
+    <img src="photo7.JPG" alt=""/>
   </div>
 
   <div class="frame">
@@ -232,7 +253,7 @@
             <div class="title sm" style="margin-top:2px;">6 pm</div>
             <div class="icon" style="margin-top:10px;">📍</div>
             <div class="title md"><strong>كنيسة مار فوقا غدير</strong></div>
-			<div class="title md"><strong>شبك السيوف عند الساعة 7:15</strong></div
+            <div class="title md"><strong>شبك السيوف عند الساعة 7:15</strong></div>
             <div class="muted">Ghadir</div>
             <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location Map</a>
           </article>
@@ -295,7 +316,7 @@
           <!-- 8. Final (not in menu) -->
           <article class="slide" aria-label="Final">
             <div class="polaroid">
-              <img src="photo6.JPG" alt="Together forever"/>
+              <img src="photo7.JPG" alt="Together forever"/>
               <div class="cap">♡Together forever♡</div>
             </div>
           </article>
@@ -323,11 +344,10 @@
   /* ===== Slider logic (mobile) ===== */
   var slidesEl = document.getElementById('slides');
   var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
-  document.documentElement.style.setProperty('--count', String(slides.length));
 
   var dotsEl = document.getElementById('dots');
   var index = 0, startX=0, curX=0, dragging=false;
-  var step = 100 / slides.length;
+  var step = 100; // move by 100% per slide
 
   function renderDots(){
     dotsEl.innerHTML = '';
@@ -420,9 +440,9 @@
     tryPlayOnce().finally(function(){
       unlockBtn && unlockBtn.classList.add('hidden');
       refreshMusicIcon();
-      window.removeEventListener('pointerdown', userUnlock, {passive:true});
-      window.removeEventListener('keydown', userUnlock, {passive:true});
-      window.removeEventListener('touchstart', userUnlock, {passive:true});
+      window.removeEventListener('pointerdown', userUnlock);
+      window.removeEventListener('keydown', userUnlock);
+      window.removeEventListener('touchstart', userUnlock);
     });
   }
   window.addEventListener('pointerdown', userUnlock, {passive:true});
