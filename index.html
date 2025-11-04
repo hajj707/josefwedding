@@ -23,109 +23,217 @@
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
     body{
-      font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      color:#fff;background:#000;overflow:hidden;-webkit-tap-highlight-color:transparent;
+      font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Apple Color Emoji','Segoe UI Emoji',sans-serif;
+      color:#fff;background:#000;overflow:hidden;-webkit-tap-highlight-color: transparent;
     }
 
-    /* Background slideshow */
+    /* Background slideshow (behind everything) */
     .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
     .bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
     .bg img.active{opacity:1}
     .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.60))}
 
-    /* Layout + typography (unchanged) */
+    /* Mobile frame */
     .frame{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
     .phone{position:relative;width:100vw;height:100dvh;overflow:hidden;z-index:1}
+
+    /* Top-left hamburger */
+    .topbar{position:absolute;left:10px;top:10px;z-index:20}
+    .hamburger{width:36px;height:36px;border-radius:8px;background:var(--panel);display:grid;place-items:center;border:1px solid var(--border)}
+    .hamburger span{display:block;width:18px;height:2px;background:#fff;box-shadow:0 6px 0 #fff,0 -6px 0 #fff}
+
+    /* Music toggle */
+    .music{position:absolute;left:10px;bottom:10px;z-index:20;width:36px;height:36px;border-radius:8px;background:var(--panel);display:grid;place-items:center;border:1px solid var(--border);font-size:18px}
+
+    /* Mini iOS unlock pill */
+    .snack {
+      position: fixed; left: 50%; transform: translateX(-50%);
+      bottom: 70px; z-index: 50;
+      background: rgba(0,0,0,.78); color: #fff;
+      padding: 10px 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.6);
+      font-size: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    }
+    .snack.hidden { display: none; }
+
+    /* Swipe hint */
+    .hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:13px;opacity:.9;z-index:5}
+
+    /* Slider */
+    .slider{position:relative;height:100%;width:100%;touch-action:pan-y;overflow:hidden}
+    .slides{
+      display:flex;height:100%;
+      width:calc(var(--count) * 100%); /* container = sum of all slides */
+      transition:transform .45s ease; will-change: transform;
+    }
+    .slide{
+      position:relative;
+      flex:0 0 calc(100% / var(--count)); /* each slide = 1/var(--count) */
+      width:calc(100% / var(--count));
+      height:100%;
+      padding:24px 18px env(safe-area-inset-bottom);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center
+    }
+
+    /* Typography */
     .script{font-family:'Great Vibes',cursive;letter-spacing:.4px}
     .title{font-family:'Playfair Display',Georgia,serif}
     .lg{font-size:44px;line-height:1.08}
     .md{font-size:28px}
     .sm{font-size:18px}
     .muted{color:var(--muted)}
-    .script,.title{text-shadow:0 1px 2px rgba(0,0,0,.7),0 2px 12px rgba(0,0,0,.55)}
-    @media(max-width:360px){.lg{font-size:38px}.md{font-size:24px}}
+    .script,.title{ text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 2px 12px rgba(0,0,0,.55); } /* readability */
+
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);border-radius:999px;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
+    .card{background:var(--panel);border-radius:18px;padding:16px 14px;box-shadow:0 6px 20px rgba(0,0,0,.2);backdrop-filter:saturate(110%) blur(2px)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:12px;background:transparent;border:1px solid var(--border);color:#fff;font-weight:600;text-decoration:none}
+
+    /* Dots */
+    .dots{position:absolute;left:0;right:0;bottom:var(--dots-y);display:flex;justify-content:center;gap:6px;z-index:5}
+    .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}
+    .dot.active{background:#fff}
+
+    /* Icons */
+    .icon{font-size:22px;margin-bottom:8px;opacity:.95}
+
+    /* Menu panel */
+    .menu{position:absolute;inset:8px;z-index:40;background:rgba(0,0,0,.82);border:2px solid var(--border);border-radius:16px;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    .menu a{display:block;font-family:'Playfair Display',serif;font-size:24px;margin:12px 0;color:#fff;text-decoration:none}
+    .menu .close{position:absolute;left:12px;top:12px;font-size:22px}
+    .menu-open .menu{display:flex}
+
+    /* Polaroid */
+    .polaroid{background:#f6f6f6;color:#111;border-radius:12px;padding:10px 10px 16px;width:min(280px,82vw);transform:rotate(-6deg);box-shadow:0 10px 26px rgba(0,0,0,.35)}
+    .polaroid img{display:block;width:100%;height:360px;object-fit:cover;border-radius:8px}
+    .polaroid .cap{text-align:center;margin-top:8px;font-family:'Playfair Display',serif}
+
+    /* Form */
+    form{display:grid;gap:10px;width:min(520px, 92%);margin:0 auto;text-align:left}
+    label{font-size:12px;opacity:.95}
+    input,select,textarea{width:100%;padding:12px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#fff;font-size:16px}
+    textarea{min-height:104px;resize:vertical}
+
+    .toggle{display:flex;gap:8px;margin:10px auto 12px;width:min(520px,92%)}
+    .toggle-btn{flex:1;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55);background:transparent;color:#fff;font-weight:600}
+    .toggle-btn.active{background:rgba(76,175,80,.95);color:#000;border-color:transparent}
+
+    @media (max-width:360px){.lg{font-size:38px}.md{font-size:24px}}
   </style>
 </head>
 <body>
-
-  <!-- 6-photo background slideshow -->
+  <!-- Background slideshow -->
   <div class="bg" aria-hidden="true">
-    <img src="photo1.jpg" class="active" alt=""/>
-    <img src="photo2.jpg" alt=""/>
-    <img src="photo3.jpg" alt=""/>
-    <img src="photo4.jpg" alt=""/>
-    <img src="photo5.jpg" alt=""/>
-    <img src="photo6.jpg" alt=""/>
+    <img src="photo1" class="active" alt=""/>
+    <img src="photo2" alt=""/>
+    <!-- Added 4 more photos (replace filenames with your own) -->
+    <img src="photo3" alt=""/>
+    <img src="photo4" alt=""/>
+    <img src="photo5" alt=""/>
+    <img src="photo6" alt=""/>
   </div>
 
-  <!-- all slides -->
   <div class="frame">
     <div class="phone" id="phone">
-      <main class="slider" id="slider">
-        <section class="slides" id="slides">
+      <!-- Hamburger -->
+      <div class="topbar"><button id="menuBtn" class="hamburger" aria-label="Open menu"><span></span></button></div>
+      <!-- Music toggle -->
+      <button id="musicBtn" class="music" aria-label="Toggle music">♪</button>
+      <!-- Tiny iOS unlock pill (only shows if needed) -->
+      <button id="unlockAudio" class="snack hidden">🔊 Tap to enable sound</button>
+
+      <!-- Menu (first 7 pages) -->
+      <nav class="menu" id="menu">
+        <button class="close btn" id="closeMenu">✕</button>
+        <a href="#" data-slide="0">Home</a>
+        <a href="#" data-slide="1">Names</a>
+        <a href="#" data-slide="2">Invitation</a>
+        <a href="#" data-slide="3">Wedding Ceremony</a>
+        <a href="#" data-slide="4">Wedding Celebration</a>
+        <a href="#" data-slide="5">Gift Registry</a>
+        <a href="#" data-slide="6">RSVP</a>
+      </nav>
+
+      <!-- Slider -->
+      <main class="slider" id="slider" role="region" aria-roledescription="carousel" aria-label="Wedding invitation">
+        <section class="slides" id="slides" aria-live="polite">
           <!-- 1. Home -->
-          <article class="slide">
+          <article class="slide" aria-label="Home">
             <div class="chip">With love</div>
+            <!-- Changed to readable serif title font -->
             <h1 class="title lg" style="margin:14px 0 6px;">Joseph &amp; Anna-Maria</h1>
             <div class="title sm muted">are getting married</div>
           </article>
 
           <!-- 2. Names -->
-          <article class="slide">
+          <article class="slide" aria-label="Names">
+            <!-- Changed to readable serif title font -->
             <h2 class="title lg">Joseph</h2>
             <h2 class="title lg" style="margin-top:-6px;">&amp;</h2>
             <h2 class="title lg" style="margin-top:-6px;">Anna-Maria</h2>
             <div class="title sm muted" style="margin-top:10px;">are getting married</div>
           </article>
 
-          <!-- 3. Invitation -->
-          <article class="slide">
+          <!-- 3. Verse & Invitation -->
+          <article class="slide" aria-label="Invitation">
             <div class="title sm muted" style="margin-bottom:8px;">"This is my commandment: Love one another as I love you."<br/>— John 15:12</div>
             <div class="title md" style="margin:12px 0 2px;">With joyous hearts,</div>
             <div class="title md"><strong>Gemayel &amp; Elias families</strong></div>
             <div class="title sm muted" style="margin-top:8px;">request your presence to attend the wedding of</div>
+            <!-- Changed to readable serif title font -->
             <div class="title lg" style="margin:14px 0 8px;">Joseph &amp; Anna-Maria</div>
             <div class="title sm">on December 6, 2025</div>
             <div class="muted">at 6:30 pm</div>
           </article>
 
-          <!-- 4. Ceremony -->
-          <article class="slide">
-            <div class="script md">Wedding Ceremony</div>
+          <!-- 4. Wedding Ceremony -->
+          <article class="slide" aria-label="Wedding Ceremony">
+            <div class="script md" style="margin-bottom:8px;">Wedding Ceremony</div>
             <div class="icon">⛪</div>
-            <div class="title sm"><strong>December 6, 2025 – 6:30 pm</strong></div>
+            <div class="title sm"><strong>December 6, 2025</strong></div>
+            <div class="title sm" style="margin-top:2px;">6:30 pm</div>
             <div class="icon" style="margin-top:10px;">📍</div>
-            <div class="title md"><strong>St Phocas Parish – كنيسة مار فوقا غدير</strong></div>
+            <div class="title md"><strong>St Phocas Parish-كنيسة مار فوقا غدير</strong></div>
             <div class="muted">Ghadir</div>
-            <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location Map</a>
+            <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/maT4gYYdBWh6UuLH7">Location Map</a>
           </article>
 
-          <!-- 5. Celebration -->
-          <article class="slide">
-            <div class="script md">Wedding Celebration</div>
+          <!-- 5. Wedding Celebration -->
+          <article class="slide" aria-label="Wedding Celebration">
+            <div class="script md" style="margin-bottom:8px;">Wedding Celebration</div>
             <div class="icon">🥂</div>
-            <div class="title sm"><strong>December 6, 2025 – 9:00 pm</strong></div>
+            <div class="title sm"><strong>December 6, 2025</strong></div>
+            <div class="title sm" style="margin-top:2px;">9:00 pm</div>
             <div class="icon" style="margin-top:10px;">📍</div>
-            <div class="title md"><strong>Officer Club Jounieh – نادي الضباط جونية</strong></div>
+            <div class="title md"><strong>Officer club Jounieh-نادي الضباط جونية</strong></div>
             <div class="muted">Jounieh, Lebanon</div>
-            <a class="btn" target="_blank" rel="noopener" href="https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5">Location Map</a>
+            <a class="btn" style="margin-top:12px;" target="_blank" rel="noopener" href="https://maps.app.goo.gl/ykKRpVrUQr2jbCAt5">Location Map</a>
           </article>
 
           <!-- 6. Gift Registry -->
-          <article class="slide">
-            <div class="script md">Gift Registry</div>
-            <div class="title sm" style="max-width:86%;">Your presence is the only gift we truly need. But if you wish to bless us further:</div>
+          <article class="slide" aria-label="Gift Registry">
+            <div class="script md" style="margin-bottom:8px;">Gift Registry</div>
+            <div class="title sm" style="max-width:86%;">Your presence is the only gift we truly need. But if you wish to bless us further, our wedding registry can be found at:</div>
+            <!-- Updated to requested number format -->
             <div class="title md" style="margin-top:12px;"><strong>Whish Money (All Branches): 70330085</strong></div>
           </article>
 
           <!-- 7. RSVP -->
-          <article class="slide">
-            <div class="title sm">Kindly reply by <strong>Nov 25</strong></div>
-            <div class="title sm muted">Number of Invitees: <strong>6</strong></div>
-            <form id="rsvp" action="https://formspree.io/f/mblzazgw" method="POST">
+          <article class="slide" aria-label="RSVP">
+            <div class="title sm" style="margin-bottom:8px;">Kindly reply by <strong>Nov 25</strong></div>
+            <!-- Updated invitee max display to 6 -->
+            <div class="title sm muted" style="margin-bottom:12px;">Number of Invitees: <strong>6</strong></div>
+
+            <div class="toggle" role="tablist" aria-label="Attendance">
+              <button type="button" class="toggle-btn active" data-value="Attending">Attending</button>
+              <button type="button" class="toggle-btn" data-value="Not Attending">Not Attending</button>
+            </div>
+
+            <form id="rsvp" action="https://formspree.io/f/mblzazgw" method="POST" novalidate>
               <input type="hidden" name="invite" value="Joseph & Anna-Maria — 6 Dec 2025" />
               <input type="hidden" name="attending" id="attending" value="Attending" />
+
               <label>Number of Guests Attending
+                <!-- Expanded to 1–6 -->
                 <select name="guests" id="guests">
                   <option value="1">1</option>
                   <option value="2" selected>2</option>
@@ -135,57 +243,204 @@
                   <option value="6">6</option>
                 </select>
               </label>
-              <label>Guest #1<input name="guest1" id="guest1" placeholder="Full name" required></label>
-              <label id="guest2-wrap">Guest #2<input name="guest2" id="guest2" placeholder="Full name" required></label>
-              <label id="guest3-wrap">Guest #3<input name="guest3" id="guest3" placeholder="Full name"></label>
-              <label id="guest4-wrap">Guest #4<input name="guest4" id="guest4" placeholder="Full name"></label>
-              <label id="guest5-wrap">Guest #5<input name="guest5" id="guest5" placeholder="Full name"></label>
-              <label id="guest6-wrap">Guest #6<input name="guest6" id="guest6" placeholder="Full name"></label>
-              <label>Phone Number<input name="phone" inputmode="tel" placeholder="+961 …"></label>
+
+              <label>Guest #1<input name="guest1" id="guest1" placeholder="Full name" required /></label>
+              <label id="guest2-wrap">Guest #2<input name="guest2" id="guest2" placeholder="Full name" required /></label>
+              <!-- Additional guest fields (shown/required dynamically up to selection) -->
+              <label id="guest3-wrap">Guest #3<input name="guest3" id="guest3" placeholder="Full name" /></label>
+              <label id="guest4-wrap">Guest #4<input name="guest4" id="guest4" placeholder="Full name" /></label>
+              <label id="guest5-wrap">Guest #5<input name="guest5" id="guest5" placeholder="Full name" /></label>
+              <label id="guest6-wrap">Guest #6<input name="guest6" id="guest6" placeholder="Full name" /></label>
+
+              <label>Phone Number<input name="phone" inputmode="tel" placeholder="+961 …" /></label>
               <button class="btn" type="submit">Press To Confirm</button>
             </form>
+            <div id="thanks" class="card" style="display:none;margin-top:10px;">Thank you! Your RSVP has been received.</div>
+          </article>
+
+          <!-- 8. Final (not in menu) -->
+          <article class="slide" aria-label="Final">
+            <div class="polaroid">
+              <img src="photo_2025-10-09_11-19-49.jpg" alt="Together forever"/>
+              <div class="cap">♡Together forever♡</div>
+            </div>
+            <div class="title sm" style="position:absolute;bottom:70px;left:0;right:0;opacity:.9;">Made by InviteMe</div>
           </article>
         </section>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <div class="hint">Swipe Left</div>
       </main>
     </div>
   </div>
 
+  <!-- Background music -->
   <audio id="bgm" src="invite-music.mp3" preload="auto" loop autoplay playsinline></audio>
 
   <script>
-  /* Background slideshow for any number of images */
-  const bgImgs = [...document.querySelectorAll('.bg img')];
-  let bgIndex = 0;
-  setInterval(() => {
+  /* ===== Background slideshow (images, 5s each) ===== */
+  var bgImgs = Array.prototype.slice.call(document.querySelectorAll('.bg img'));
+  var bgIndex = 0;
+  setInterval(function(){
     if (!bgImgs.length) return;
-    bgImgs[bgIndex].classList.remove('active');
+    if (bgImgs[bgIndex]) bgImgs[bgIndex].classList.remove('active');
     bgIndex = (bgIndex + 1) % bgImgs.length;
-    bgImgs[bgIndex].classList.add('active');
+    if (bgImgs[bgIndex]) bgImgs[bgIndex].classList.add('active');
   }, 5000);
 
-  /* RSVP guest toggle logic (1–6) */
-  const attendingHidden = document.getElementById('attending');
-  const guestsSel = document.getElementById('guests');
-  const guestFields = [], guestWraps = [];
-  for (let i = 1; i <= 6; i++) {
-    guestFields[i] = document.getElementById('guest' + i);
-    guestWraps[i] = document.getElementById('guest' + i + '-wrap');
-  }
-  function setVisible(wrap, show){ if(wrap) wrap.style.display = show ? 'block' : 'none'; }
-  function syncGuests(){
-    const attending = attendingHidden.value || 'Attending';
-    let count = parseInt(guestsSel.value||'1');
-    if(isNaN(count)||count<1) count=1; if(count>6) count=6;
-    if(attending==='Not Attending'){
-      guestsSel.disabled=true;
-      for(let i=1;i<=6;i++){ setVisible(guestWraps[i],false); guestFields[i].required=false; }
-    }else{
-      guestsSel.disabled=false;
-      for(let i=1;i<=6;i++){ const need=i<=count; setVisible(guestWraps[i],need); guestFields[i].required=need; }
+  /* ===== Slider logic (mobile) ===== */
+  var slidesEl = document.getElementById('slides');
+  var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
+  // keep CSS var in sync with actual count
+  document.documentElement.style.setProperty('--count', String(slides.length));
+
+  var dotsEl = document.getElementById('dots');
+  var index = 0, startX=0, curX=0, dragging=false;
+  var step = 100 / slides.length; // percent to move per slide
+
+  function renderDots(){
+    dotsEl.innerHTML = '';
+    for (var i=0;i<slides.length;i++){
+      var d=document.createElement('div');
+      d.className='dot' + (i===index?' active':'');
+      dotsEl.appendChild(d);
     }
   }
-  guestsSel.addEventListener('change',syncGuests);
-  syncGuests();
+  function updateSlider(){
+    slidesEl.style.transform = 'translateX(-' + (index*step) + '%)';
+    var dots = dotsEl.children;
+    for (var i=0;i<dots.length;i++){ dots[i].classList.toggle('active', i===index); }
+  }
+  renderDots(); updateSlider();
+
+  var slider = document.getElementById('slider');
+  slider.addEventListener('touchstart', function(e){ dragging=true; startX=e.touches[0].clientX; curX=startX; }, {passive:true});
+  slider.addEventListener('touchmove', function(e){ if(!dragging) return; curX=e.touches[0].clientX; }, {passive:true});
+  slider.addEventListener('touchend', function(){ if(!dragging) return; dragging=false; var dx=curX-startX; if(dx<-40 && index<slides.length-1) index++; else if(dx>40 && index>0) index--; updateSlider(); });
+
+  /* ===== Menu (7 items -> slides 0..6) ===== */
+  var phone = document.getElementById('phone');
+  var menu = document.getElementById('menu');
+  document.getElementById('menuBtn').addEventListener('click', function(){ phone.classList.add('menu-open'); });
+  document.getElementById('closeMenu').addEventListener('click', function(){ phone.classList.remove('menu-open'); });
+  var menuLinks = menu.querySelectorAll('a[data-slide]');
+  for (var j=0;j<menuLinks.length;j++){
+    menuLinks[j].addEventListener('click', function(e){
+      e.preventDefault();
+      index = Number(this.getAttribute('data-slide')) || 0;
+      updateSlider();
+      phone.classList.remove('menu-open');
+    });
+  }
+
+  /* ===== Music autoplay + minimal iOS unlock ===== */
+  var audio = document.getElementById('bgm');
+  var musicBtn = document.getElementById('musicBtn');
+  var unlockBtn = document.getElementById('unlockAudio');
+  var autoKick = null;
+
+  function isiOS() {
+    var ua = navigator.userAgent || navigator.vendor || window.opera;
+    return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+  function refreshMusicIcon(){ musicBtn.textContent = (audio && !audio.paused) ? '♪' : '♫'; }
+  function tryPlayOnce() {
+    if (!audio) return Promise.reject();
+    var p = audio.play();
+    if (p && typeof p.then === 'function') return p;
+    return Promise.resolve();
+  }
+  function attemptAutoplay() {
+    tryPlayOnce()
+    .then(function () {
+      unlockBtn && unlockBtn.classList.add('hidden');
+      if (autoKick){ clearInterval(autoKick); autoKick = null; }
+      refreshMusicIcon();
+    })
+    .catch(function () {
+      if (isiOS()) unlockBtn && unlockBtn.classList.remove('hidden');
+      refreshMusicIcon();
+    });
+  }
+  window.addEventListener('load', attemptAutoplay);
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) attemptAutoplay(); });
+  autoKick = setInterval(attemptAutoplay, 2000);
+  attemptAutoplay();
+
+  function userUnlock() {
+    tryPlayOnce().finally(function(){
+      unlockBtn && unlockBtn.classList.add('hidden');
+      refreshMusicIcon();
+      window.removeEventListener('pointerdown', userUnlock, {passive:true});
+      window.removeEventListener('keydown', userUnlock, {passive:true});
+      window.removeEventListener('touchstart', userUnlock, {passive:true});
+    });
+  }
+  window.addEventListener('pointerdown', userUnlock, {passive:true});
+  window.addEventListener('keydown', userUnlock, {passive:true});
+  window.addEventListener('touchstart', userUnlock, {passive:true});
+  unlockBtn && unlockBtn.addEventListener('click', userUnlock);
+
+  // manual toggle
+  musicBtn.addEventListener('click', function(){
+    if(audio.paused){ audio.play(); } else { audio.pause(); }
+    refreshMusicIcon();
+  });
+  audio.addEventListener('play', refreshMusicIcon);
+  audio.addEventListener('pause', refreshMusicIcon);
+  refreshMusicIcon();
+
+  /* ===== RSVP toggle logic (generalized for up to 6 guests) ===== */
+  var attendingHidden = document.getElementById('attending');
+  var guestsSel = document.getElementById('guests');
+
+  // Guest fields and wrappers
+  var guestFields = [];
+  var guestWraps = [];
+  for (var gi = 1; gi <= 6; gi++) {
+    guestFields[gi] = document.getElementById('guest' + gi);
+    guestWraps[gi] = document.getElementById('guest' + gi + '-wrap');
+  }
+
+  function setWrapVisible(wrap, show){
+    if (!wrap) return;
+    wrap.style.display = show ? 'block' : 'none';
+  }
+
+  function syncGuestsUI(){
+    if (!attendingHidden) return;
+    var attending = attendingHidden.value || 'Attending';
+    var maxGuests = 6;
+    var count = guestsSel ? parseInt(guestsSel.value || '1', 10) : 1;
+    if (isNaN(count) || count < 1) count = 1;
+    if (count > maxGuests) count = maxGuests;
+
+    if (attending === 'Not Attending'){
+      if (guestsSel) guestsSel.disabled = true;
+      for (var i = 1; i <= maxGuests; i++){
+        setWrapVisible(guestWraps[i], false);
+        if (guestFields[i]) guestFields[i].required = false;
+      }
+    } else {
+      if (guestsSel) guestsSel.disabled = false;
+      for (var i = 1; i <= maxGuests; i++){
+        var needed = i <= count;
+        setWrapVisible(guestWraps[i], needed);
+        if (guestFields[i]) guestFields[i].required = needed;
+      }
+    }
+  }
+
+  var toggles = document.querySelectorAll('.toggle-btn');
+  for (var k=0;k<toggles.length;k++){
+    toggles[k].addEventListener('click', function(){
+      for (var m=0;m<toggles.length;m++){ toggles[m].classList.remove('active'); }
+      this.classList.add('active');
+      if (attendingHidden) attendingHidden.value = this.getAttribute('data-value');
+      syncGuestsUI();
+    });
+  }
+  if (guestsSel) guestsSel.addEventListener('change', syncGuestsUI);
+  syncGuestsUI();
   </script>
 </body>
 </html>
