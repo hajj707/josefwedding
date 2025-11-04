@@ -217,7 +217,7 @@
       <main class="slider" id="slider" role="region" aria-roledescription="carousel" aria-label="Wedding invitation">
         <section class="slides" id="slides" aria-live="polite">
           <!-- 1. Start screen -->
-          <article class="slide" aria-label="Start">
+          <article class="slide" id="start-slide" aria-label="Start">
             <div class="start-screen">
               <button type="button" class="start-circle" id="startBtn">
                 Start
@@ -348,23 +348,28 @@
   var dotsEl = document.getElementById('dots');
   var index = 0, startX=0, curX=0, dragging=false;
   var step = 100; // move by 100% per slide
+  var started = false; // after "Start" is tapped
+  var startSlide = document.getElementById('start-slide');
+
+  function updateSlider(){
+    var minIndex = started ? 1 : 0;
+    if (index < minIndex) index = minIndex;
+    if (index > slides.length - 1) index = slides.length - 1;
+    slidesEl.style.transform = 'translateX(-' + (index*step) + '%)';
+  }
 
   function renderDots(){
     dotsEl.innerHTML = '';
-    for (var i=0;i<slides.length;i++){
-      var d=document.createElement('div');
-      d.className='dot' + (i===index?' active':'');
+    var firstIndex = started ? 1 : 0;
+    for (var i = firstIndex; i < slides.length; i++){
+      var d = document.createElement('div');
+      d.className = 'dot' + (i === index ? ' active' : '');
       dotsEl.appendChild(d);
     }
   }
-  function updateSlider(){
-    slidesEl.style.transform = 'translateX(-' + (index*step) + '%)';
-    var dots = dotsEl.children;
-    for (var i=0;i<dots.length;i++){
-      dots[i].classList.toggle('active', i===index);
-    }
-  }
-  renderDots(); updateSlider();
+
+  updateSlider();
+  renderDots();
 
   var slider = document.getElementById('slider');
   slider.addEventListener('touchstart', function(e){ dragging=true; startX=e.touches[0].clientX; curX=startX; }, {passive:true});
@@ -373,30 +378,28 @@
     if(!dragging) return;
     dragging=false;
     var dx=curX-startX;
+    var minIndex = started ? 1 : 0;
     if(dx<-40 && index<slides.length-1) index++;
-    else if(dx>40 && index>0) index--;
+    else if(dx>40 && index>minIndex) index--;
     updateSlider();
+    renderDots();
   });
 
-  /* ===== Start button: remove first slide and jump to Names ===== */
+  /* ===== Start button: hide first slide and jump to Names ===== */
   var startBtn = document.getElementById('startBtn');
   if (startBtn){
     startBtn.addEventListener('click', function(){
-      // remove the first slide (the start screen)
-      var firstSlide = slidesEl.querySelector('.slide');
-      if (firstSlide) {
-        slidesEl.removeChild(firstSlide);
+      started = true;
+      if (startSlide){
+        startSlide.style.display = 'none'; // visually remove first slide
       }
-      // rebuild slides list without the removed slide
-      slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
-      // reset index so the new first slide is "Names"
-      index = 0;
-      renderDots();
+      index = 1; // Names
       updateSlider();
+      renderDots();
     });
   }
 
-  /* ===== Menu (7 items -> slides 0..6 BEFORE removal, but now "Start" also goes to Names) ===== */
+  /* ===== Menu (7 items -> slides) ===== */
   var phone = document.getElementById('phone');
   var menu = document.getElementById('menu');
   document.getElementById('menuBtn').addEventListener('click', function(){ phone.classList.add('menu-open'); });
@@ -406,13 +409,12 @@
     menuLinks[j].addEventListener('click', function(e){
       e.preventDefault();
       var targetIndex = Number(this.getAttribute('data-slide')) || 0;
-      // After removing the first slide, slide 0 is already "Names"
-      if (targetIndex === 0 && slides.length < 8) {
-        index = 0;
-      } else {
-        index = targetIndex;
+      if (started && targetIndex === 0) {
+        targetIndex = 1; // once started, "Start" goes to Names
       }
+      index = targetIndex;
       updateSlider();
+      renderDots();
       phone.classList.remove('menu-open');
     });
   }
