@@ -117,7 +117,46 @@
     .toggle-btn{flex:1;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.55);background:transparent;color:#fff;font-weight:600}
     .toggle-btn.active{background:rgba(76,175,80,.95);color:#000;border-color:transparent}
 
-    @media (max-width:360px){.lg{font-size:38px}.md{font-size:24px}}
+    /* Start screen */
+    .start-screen{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:18px;
+      width:100%;
+    }
+    .start-circle{
+      width:170px;
+      height:170px;
+      border-radius:50%;
+      border:2px solid rgba(255,255,255,.9);
+      background:rgba(0,0,0,.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      font-family:'Playfair Display',serif;
+      font-size:28px;
+      color:#fff;
+      outline:none;
+      padding:0;
+      cursor:pointer;
+    }
+    .start-circle:active{
+      transform:scale(.97);
+    }
+    .start-sub{
+      font-size:16px;
+      opacity:.9;
+      font-family:'Playfair Display',serif;
+    }
+
+    @media (max-width:360px){
+      .lg{font-size:38px}
+      .md{font-size:24px}
+      .start-circle{width:150px;height:150px;font-size:24px}
+    }
   </style>
 </head>
 <body>
@@ -143,7 +182,7 @@
       <!-- Menu (first 7 pages) -->
       <nav class="menu" id="menu">
         <button class="close btn" id="closeMenu">✕</button>
-        <a href="#" data-slide="0">Home</a>
+        <a href="#" data-slide="0">Start</a>
         <a href="#" data-slide="1">Names</a>
         <a href="#" data-slide="2">Invitation</a>
         <a href="#" data-slide="3">Wedding Ceremony</a>
@@ -155,12 +194,14 @@
       <!-- Slider -->
       <main class="slider" id="slider" role="region" aria-roledescription="carousel" aria-label="Wedding invitation">
         <section class="slides" id="slides" aria-live="polite">
-          <!-- 1. Home -->
-          <article class="slide" aria-label="Home">
-            <div class="chip">With love</div>
-            <!-- Serif title font for names -->
-            <h1 class="title lg" style="margin:14px 0 6px;">Joseph &amp; Anna-Maria</h1>
-            <div class="title sm muted">are getting married</div>
+          <!-- 1. Start screen -->
+          <article class="slide" aria-label="Start">
+            <div class="start-screen">
+              <button type="button" class="start-circle" id="startBtn">
+                Start
+              </button>
+              <div class="start-sub">Tap to start</div>
+            </div>
           </article>
 
           <!-- 2. Names -->
@@ -254,7 +295,6 @@
           <!-- 8. Final (not in menu) -->
           <article class="slide" aria-label="Final">
             <div class="polaroid">
-              <!-- Use one of the 6 resized photos here -->
               <img src="photo6.JPG" alt="Together forever"/>
               <div class="cap">♡Together forever♡</div>
             </div>
@@ -284,12 +324,11 @@
   /* ===== Slider logic (mobile) ===== */
   var slidesEl = document.getElementById('slides');
   var slides = Array.prototype.slice.call(slidesEl.querySelectorAll('.slide'));
-  // keep CSS var in sync with actual count
   document.documentElement.style.setProperty('--count', String(slides.length));
 
   var dotsEl = document.getElementById('dots');
   var index = 0, startX=0, curX=0, dragging=false;
-  var step = 100 / slides.length; // percent to move per slide
+  var step = 100 / slides.length;
 
   function renderDots(){
     dotsEl.innerHTML = '';
@@ -302,14 +341,32 @@
   function updateSlider(){
     slidesEl.style.transform = 'translateX(-' + (index*step) + '%)';
     var dots = dotsEl.children;
-    for (var i=0;i<dots.length;i++){ dots[i].classList.toggle('active', i===index); }
+    for (var i=0;i<dots.length;i++){
+      dots[i].classList.toggle('active', i===index);
+    }
   }
   renderDots(); updateSlider();
 
   var slider = document.getElementById('slider');
   slider.addEventListener('touchstart', function(e){ dragging=true; startX=e.touches[0].clientX; curX=startX; }, {passive:true});
   slider.addEventListener('touchmove', function(e){ if(!dragging) return; curX=e.touches[0].clientX; }, {passive:true});
-  slider.addEventListener('touchend', function(){ if(!dragging) return; dragging=false; var dx=curX-startX; if(dx<-40 && index<slides.length-1) index++; else if(dx>40 && index>0) index--; updateSlider(); });
+  slider.addEventListener('touchend', function(){
+    if(!dragging) return;
+    dragging=false;
+    var dx=curX-startX;
+    if(dx<-40 && index<slides.length-1) index++;
+    else if(dx>40 && index>0) index--;
+    updateSlider();
+  });
+
+  /* ===== Start button -> jump to slide 1 (Names) ===== */
+  var startBtn = document.getElementById('startBtn');
+  if (startBtn){
+    startBtn.addEventListener('click', function(){
+      index = 1;        // move to Names slide
+      updateSlider();
+    });
+  }
 
   /* ===== Menu (7 items -> slides 0..6) ===== */
   var phone = document.getElementById('phone');
